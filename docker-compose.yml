@@ -1,0 +1,25 @@
+version: '1.0'
+
+services:
+  mysql:
+    image: mysql:8.0  # 确保使用的 MySQL 版本是你所需要的
+    container_name: mysql
+    restart: always
+    environment:
+      LANG: en_US.UTF-8
+      TZ:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: public_opinion_analysis_platform
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3307:3306"
+    volumes:
+      - "./dockerenvs/mysql/data:/var/lib/mysql"
+      - "./dockerenvs/mysql/conf:/etc/mysql/conf.d"
+      - "./dockerenvs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql"
+    networks:
+      - my_network
+networks:
+  my_network:
+    driver: bridge
