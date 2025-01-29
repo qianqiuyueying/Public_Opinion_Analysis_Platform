@@ -1,25 +1,27 @@
-version: '1.0'
-
 services:
-  mysql:
-    image: mysql:8.0  # 确保使用的 MySQL 版本是你所需要的
-    container_name: mysql
-    restart: always
+
+
+  mysql:  # 数据库docker容器
+    image: mysql:8.0
+    container_name: lhmy_mysql
+    restart: always  # 自动重启
+    ports:
+      - "3303:3306"  # 端口映射
     environment:
       LANG: en_US.UTF-8
-      TZ:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: public_opinion_analysis_platform
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: 123456
-    ports:
-      - "3307:3306"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: database
+      TZ: Asia/Shanghai
     volumes:
       - "./dockerenvs/mysql/data:/var/lib/mysql"
-      - "./dockerenvs/mysql/conf:/etc/mysql/conf.d"
-      - "./dockerenvs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./dockerenvs/mysql/conf.d:/etc/mysql/conf.d"
+      - "./dockerenvs/mysql/logs:/logs"
+    privileged: true
     networks:
-      - my_network
+      - my_networks
+
+
+
 networks:
-  my_network:
+  my_networks:
     driver: bridge

@@ -10,4 +10,4 @@ echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > .env
 
 
 # 启动容器
-docker-compose up -d
+docker-compose up --build -d

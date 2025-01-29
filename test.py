@@ -1,2 +1,3 @@
-for i in range(10):
-    print("*")
+import dockerenvs.rabbitmq
+
+print(456)
