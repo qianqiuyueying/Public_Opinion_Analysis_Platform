@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  $END$
+  <h1>forget-password</h1>
 </template>
 
 <style scoped>
