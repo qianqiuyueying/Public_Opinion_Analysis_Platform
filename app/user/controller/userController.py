@@ -1,11 +1,25 @@
-from __init__ import user_router
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Path
+from ..model.dto import *
+from sqlalchemy.orm import Session
+from ..service.userService import userService
+
+
+
+user_router = APIRouter(prefix="/user")
+
 
 @user_router.post("/login")
-def login():
+def login(user: UserDTO = Body(...), service: userService = Depends(userService)):
     """
     登录接口
     """
-    ...
+    # return {"code": 200, "msg": "登录成功", "data": user}
+    try:
+        user_data = service.login(user)
+        return {"code": 200, "msg": "登录成功", "data": user_data}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
 @user_router.post("/register")
 def register():
