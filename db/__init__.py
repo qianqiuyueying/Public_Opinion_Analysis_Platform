@@ -11,6 +11,7 @@ engine = create_engine(DATABASE_URL, echo=False)
 
 # 创建一个基类，所有的模型类都将继承这个基类
 Base = declarative_base()
+Session = sessionmaker(bind=engine)
 
 
 
@@ -29,8 +30,8 @@ def get_session():
     返回一个数据库会话对象，可以用来执行数据库操作。
     """
     # 创建一个会话工厂，绑定到上面创建的数据库引擎
-    Session = sessionmaker(bind=engine)
     try:
-        yield Session
+        session = Session(autocommit=False, autoflush=False)
+        yield session
     finally:
-        Session.close()
+        session.close()

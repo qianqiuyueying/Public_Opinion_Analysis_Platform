@@ -6,7 +6,7 @@ from util.tool import now
 
 class UserRepository:
     def __init__(self):
-        self.session = get_session()
+        self.session = next(get_session())
 
     def set_login(self, user_id: int, now: now = Depends()):
         """
