@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 import uvicorn
 from app.user.controller.userController import user_router
+from db import init_db
 
 
 def init_app():
+    init_db()
     app = FastAPI()
     app.include_router(user_router)
     return app

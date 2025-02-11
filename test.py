@@ -1,5 +1,6 @@
 from util.tool import *
+from rdb import *
 
-password = "123456"
-hashed_password = PasswordManager.hash_password(password)
-print(PasswordManager.check_password(hashed_password, password))
+code = "123456"
+send_verify_code('qianqiuyueying@outlook.com', code)
+store_verify_code('qianqiuyueying@outlook.com', code)

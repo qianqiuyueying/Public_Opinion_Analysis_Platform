@@ -3,12 +3,14 @@ from db import get_session
 from ..model.data_model import *
 from fastapi import Depends
 from util.tool import now
+from ..model.dto import UserDTO
+from sqlalchemy import and_
 
 class UserRepository:
     def __init__(self):
         self.session = next(get_session())
 
-    def set_login(self, user_id: int, now: now = Depends()):
+    def set_login(self, user_id: int):
         """
         用户登录时更新必要信息
         :param user_id: 用户ID
@@ -21,37 +23,35 @@ class UserRepository:
             self.session.rollback()
             raise e
 
-    def create_user(self, user: User):
+    def create_user(self, user: UserDTO):
         """
         创建用户
         :param user: 用户信息
         """
         try:
-            self.session.add(user)
+            _ = User(
+                username=user.username,
+                email=user.email,
+                password=user.password,
+                created_at=now(),
+                update_at=now()
+            )
+            self.session.add(_)
             self.session.commit()
             return user
         except Exception as e:
             self.session.rollback()
             raise e
         
-    def get_user_by_id(self, user_id: int):
+    def get_user_by_conditions(self, **conditions):
         """
-        根据用户ID获取用户信息
-        :param user_id: 用户ID
-        """
-        try:
-            user = self.session.query(User).filter(User.id == user_id).first()
-            return user
-        except Exception as e:
-            raise e
-        
-    def get_user_by_username(self, username: str):
-        """
-        根据用户名获取用户信息
-        :param username: 用户名
+        根据条件查询用户
+        :param conditions: 查询条件
         """
         try:
-            user = self.session.query(User).filter(User.username == username).first()
+            # 构建动态的过滤条件
+            filters = [getattr(User, key) == value for key, value in conditions.items()]
+            user = self.session.query(User).filter(and_(*filters)).first()
             return user
         except Exception as e:
             raise e
