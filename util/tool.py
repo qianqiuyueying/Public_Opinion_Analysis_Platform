@@ -53,3 +53,13 @@ def send_verify_code(email: str, code: int) -> None:
     content = f"您的验证码是：{code}"
     yag.send(email, '舆情分析平台注册', content)
     yag.close()
+
+
+
+import jwt
+from config import SECRET_KEY, ALGORITHM
+def create_access_token(data: dict):
+    """
+    生成token
+    """
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)

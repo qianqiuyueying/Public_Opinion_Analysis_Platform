@@ -1,207 +1,273 @@
 <template>
-  <div class="home-container">
-    <!-- 数据概览 -->
-    <el-row :gutter="20" class="overview-row">
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">总舆情数</span>
-            <span class="card-value">12,345</span>
-            <el-icon :size="40" class="card-icon"><TrendCharts /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">正面舆情</span>
-            <span class="card-value">8,765</span>
-            <el-icon :size="40" class="card-icon"><SuccessFilled /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">负面舆情</span>
-            <span class="card-value">1,234</span>
-            <el-icon :size="40" class="card-icon"><WarningFilled /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">今日新增</span>
-            <span class="card-value">567</span>
-            <el-icon :size="40" class="card-icon"><DataLine /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+  <div class="home-page">
+    <!-- 导航栏 -->
+    <el-header class="header">
+      <div class="logo">舆情分析平台</div>
+      <div class="nav">
+        <el-link type="primary" :underline="false">首页</el-link>
+        <el-link type="primary" :underline="false">产品介绍</el-link>
+        <el-link type="primary" :underline="false">解决方案</el-link>
+        <el-link type="primary" :underline="false">客户案例</el-link>
+        <el-link type="primary" :underline="false">关于我们</el-link>
+      </div>
+      <div class="actions">
+        <el-button type="primary" @click="goToLogin">登录</el-button>
+        <el-button @click="goToRegister">注册</el-button>
+      </div>
+    </el-header>
 
-    <!-- 舆情趋势图 -->
-    <el-card class="chart-card">
-      <template #header>
-        <span class="card-title">舆情趋势图</span>
-      </template>
-      <div ref="chartRef" class="chart-container"></div>
-    </el-card>
+    <!-- 首页 Banner -->
+    <div class="banner">
+      <div class="banner-content">
+        <h1 class="banner-title">舆情分析平台</h1>
+        <p class="banner-subtitle">
+          全面监测、精准分析、智能预警，助您轻松掌握舆情动态
+        </p>
+        <el-button type="primary" size="large" @click="goToLogin">
+          立即体验
+        </el-button>
+      </div>
+    </div>
 
-    <!-- 热门话题和最新动态 -->
-    <el-row :gutter="20" class="bottom-row">
-      <el-col :span="12">
-        <el-card class="list-card">
-          <template #header>
-            <span class="card-title">热门话题</span>
-          </template>
-          <el-table :data="hotTopics" style="width: 100%">
-            <el-table-column prop="rank" label="排名" width="80" />
-            <el-table-column prop="topic" label="话题" />
-            <el-table-column prop="count" label="讨论量" width="120" />
-          </el-table>
-        </el-card>
-      </el-col>
-      <el-col :span="12">
-        <el-card class="list-card">
-          <template #header>
-            <span class="card-title">最新动态</span>
-          </template>
-          <el-timeline>
-            <el-timeline-item
-                v-for="(event, index) in latestEvents"
-                :key="index"
-                :timestamp="event.time"
-            >
-              {{ event.content }}
-            </el-timeline-item>
-          </el-timeline>
-        </el-card>
-      </el-col>
-    </el-row>
+    <!-- 平台特色 -->
+    <div class="features">
+      <h2 class="section-title">平台特色</h2>
+      <el-row :gutter="40">
+        <el-col :span="8">
+          <div class="feature-card">
+            <el-icon :size="60" color="#409EFF"><Monitor /></el-icon>
+            <h3 class="feature-title">全面监测</h3>
+            <p class="feature-description">
+              覆盖抖音、微博、小红书等主流媒体平台并在持续增加中...
+            </p>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="feature-card">
+            <el-icon :size="60" color="#409EFF"><DataAnalysis /></el-icon>
+            <h3 class="feature-title">精准分析</h3>
+            <p class="feature-description">
+              基于机器学习和 AI 技术，提供情感分析、趋势预测、动态策略等深度分析功能。
+            </p>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="feature-card">
+            <el-icon :size="60" color="#409EFF"><Cpu /></el-icon>
+            <h3 class="feature-title">流式处理架构</h3>
+            <p class="feature-description">
+              基于 redis + RabbitMQ 实时数据处理，支持每秒万级数据吞吐
+            </p>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- 客户案例 -->
+    <div class="cases">
+      <h2 class="section-title">客户案例</h2>
+      <el-carousel height="300px" :interval="5000">
+        <el-carousel-item v-for="(item, index) in cases" :key="index">
+          <div class="case-item">
+            <img :src="item.image" alt="案例图片" class="case-image" />
+            <div class="case-content">
+              <h3 class="case-title">{{ item.title }}</h3>
+              <p class="case-description">{{ item.description }}</p>
+            </div>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+    </div>
+
+    <!-- 底部 -->
+    <el-footer class="footer">
+      <div class="footer-content">
+        <p>© 2023 舆情分析平台. All rights reserved.</p>
+        <el-link type="primary" :underline="false">隐私政策</el-link>
+        <el-link type="primary" :underline="false">服务条款</el-link>
+      </div>
+    </el-footer>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import * as echarts from 'echarts'
-import {
-  TrendCharts,
-  SuccessFilled,
-  WarningFilled,
-  DataLine,
-} from '@element-plus/icons-vue'
+import { Monitor, DataAnalysis, Cpu } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+import {ref} from 'vue'
 
-// 舆情趋势图
-const chartRef = ref(null)
-let chartInstance = null
+const router = useRouter()
 
-// 初始化图表
-const initChart = () => {
-  chartInstance = echarts.init(chartRef.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-    },
-    xAxis: {
-      type: 'category',
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        name: '舆情数量',
-        type: 'line',
-        data: [120, 200, 150, 80, 70, 110, 130],
-        smooth: true,
-      },
-    ],
-  }
-  chartInstance.setOption(option)
+// 客户案例数据
+const cases = ref([
+  {
+    image: 'https://via.placeholder.com/800x400',
+    title: '某知名同学舆情管理',
+    description: '通过平台实现全网舆情监控，提升同学声誉管理效率。',
+  },
+  {
+    image: 'https://via.placeholder.com/800x400',
+    title: '某文具机构舆情监测',
+    description: '实时掌握社会热点，快速响应公众关切。',
+  },
+  {
+    image: 'https://via.placeholder.com/800x400',
+    title: '某外卖机构热点追踪',
+    description: '精准分析评论话题，提升新菜品报道时效性。',
+  },
+])
+
+// 跳转登录页
+const goToLogin = () => {
+  router.push('/login')
 }
 
-// 热门话题数据
-const hotTopics = ref([
-  { rank: 1, topic: '某品牌新品发布', count: 1234 },
-  { rank: 2, topic: '某事件引发热议', count: 987 },
-  { rank: 3, topic: '某明星动态', count: 765 },
-  { rank: 4, topic: '某政策解读', count: 543 },
-  { rank: 5, topic: '某行业趋势', count: 321 },
-])
-
-// 最新动态数据
-const latestEvents = ref([
-  { time: '2023-10-01 12:00', content: '新增舆情 123 条' },
-  { time: '2023-10-01 10:00', content: '用户 A 发布了新话题' },
-  { time: '2023-10-01 09:30', content: '系统完成数据更新' },
-  { time: '2023-10-01 08:00', content: '新增负面舆情 10 条' },
-])
-
-// 组件挂载后初始化图表
-onMounted(() => {
-  initChart()
-})
+// 跳转注册页
+const goToRegister = () => {
+  router.push('/register')
+}
 </script>
 
 <style scoped>
-.home-container {
-  padding: 20px;
+.home-page {
+  font-family: Arial, sans-serif;
 }
 
-.overview-row {
-  margin-bottom: 20px;
-}
-
-.overview-card {
-  height: 120px;
-}
-
-.card-content {
+.header {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  background-color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-.card-label {
-  font-size: 14px;
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #409EFF;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.banner {
+  height: 500px;
+  background: url('https://via.placeholder.com/1920x500') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+}
+
+.banner-content {
+  max-width: 800px;
+}
+
+/* 方案1：赛博朋克风格 */
+.banner-title {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 4.5rem;
+  text-transform: uppercase;
+  background: linear-gradient(45deg,
+  #00ff9d 25%,
+  #00b8ff 50%,
+  #ff006e 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(0,255,157,0.5),
+  0 0 40px rgba(0,184,255,0.3),
+  0 0 60px rgba(255,0,110,0.2);
+  animation: neonGlow 2s ease-in-out infinite alternate;
+}
+
+
+.banner-subtitle {
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+.features {
+  padding: 60px 40px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 32px;
+  margin-bottom: 40px;
+}
+
+.feature-card {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.feature-title {
+  font-size: 24px;
+  margin: 20px 0;
+}
+
+.feature-description {
+  font-size: 16px;
   color: #666;
 }
 
-.card-value {
+.cases {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.case-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.case-image {
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.case-content {
+  width: 40%;
+  padding: 20px;
+  text-align: left;
+}
+
+.case-title {
   font-size: 24px;
-  font-weight: bold;
-  margin: 10px 0;
+  margin-bottom: 10px;
 }
 
-.card-icon {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--el-color-primary);
+.case-description {
+  font-size: 16px;
+  color: #666;
 }
 
-.chart-card {
-  margin-bottom: 20px;
+.footer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  text-align: center;
 }
 
-.chart-container {
-  height: 300px;
-}
-
-.bottom-row {
-  margin-top: 20px;
-}
-
-.list-card {
-  height: 400px;
-}
-
-.card-title {
-  font-size: 18px;
-  font-weight: bold;
+.footer-content {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 </style>

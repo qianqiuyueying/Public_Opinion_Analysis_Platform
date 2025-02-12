@@ -5,6 +5,7 @@ from fastapi import Depends
 from util.tool import now
 from ..model.dto import UserDTO
 from sqlalchemy import and_
+from fastapi import HTTPException
 
 class UserRepository:
     def __init__(self):
@@ -43,6 +44,17 @@ class UserRepository:
             self.session.rollback()
             raise e
         
+    def get_user_by_username(self, username: str):
+        """
+        根据用户名获取用户信息
+        :param username: 用户名
+        """
+        try:
+            user = self.session.query(User).filter(User.username == username).first()
+            return user
+        except Exception as e:
+            raise e
+        
     def get_user_by_conditions(self, **conditions):
         """
         根据条件查询用户
@@ -51,8 +63,24 @@ class UserRepository:
         try:
             # 构建动态的过滤条件
             filters = [getattr(User, key) == value for key, value in conditions.items()]
-            user = self.session.query(User).filter(and_(*filters)).first()
-            return user
+            if not filters:
+                raise HTTPException(status_code=400, detail="请提供查询条件")
+            user = self.session.query(User).with_entities(User.id, User.username, User.avatar, User.email, User.created_at, User.update_at, User.last_login, User.role).filter(and_(*filters)).first()
+            if user:
+                # 使用字典构造返回值
+                user_dict = {
+                    "id": user.id,
+                    "username": user.username,
+                    "avatar": user.avatar,
+                    "email": user.email,
+                    "created_at": user.created_at,
+                    "update_at": user.update_at,
+                    "last_login": user.last_login,
+                    "role": user.role
+                }
+                return user_dict
+            else:
+                raise HTTPException(status_code=404, detail="用户不存在")
         except Exception as e:
             raise e
 
@@ -115,3 +143,5 @@ class UserRepository:
             }
         except Exception as e:
             raise e
+        
+    

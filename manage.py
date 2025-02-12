@@ -1,16 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
+import jwt
 import uvicorn
-from app.user.controller.userController import user_router
+from app import init_app
 from db import init_db
+from config import *
 
 
-def init_app():
-    init_db()
-    app = FastAPI()
-    app.include_router(user_router)
-    return app
+
 
 app = init_app()
+
+
+
 
 @app.get("/")
 def read_root():

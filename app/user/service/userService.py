@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from util.tool import *
 from rdb import *
 from random import randint
+from typing import List
 
 class userService:
     """
@@ -28,6 +29,7 @@ class userService:
             if not password_manager.check_password(password_data_bytes, user.password):
                 raise HTTPException(status_code=400, detail="密码错误")
             # 记录登录信息
+            respository = UserRepository()
             respository.set_login(user_data.id)
             return user_data
         except Exception as e:
@@ -82,5 +84,17 @@ class userService:
             respository = UserRepository()
             user = respository.get_user_by_conditions(**conditions)
             return user
+        except Exception as e:
+            raise e
+
+    def get_user_list(self, page: int, size: int) -> List[UserDTO]:
+        """
+        获取用户列表
+        :return: 用户列表
+        """
+        try:
+            respository = UserRepository()
+            users = respository.get_user_list(page, size)
+            return users
         except Exception as e:
             raise e

@@ -93,6 +93,7 @@
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Message, Key } from '@element-plus/icons-vue'
+import router from '@/router/index.js'
 
 // 表单数据
 const form = reactive({
@@ -186,9 +187,9 @@ const handleRegister = async () => {
 }
 
 // 跳转登录
-const goToLogin = () => {
+const goToLogin = async () => {
   // 实际项目中这里进行路由跳转
-  console.log('跳转登录页面')
+  await router.push('/login')
 }
 </script>
 

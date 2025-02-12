@@ -1,0 +1,2 @@
+SECRET_KEY = 'wangZiHao'
+ALGORITHM = 'HS256'

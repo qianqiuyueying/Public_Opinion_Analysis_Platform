@@ -53,8 +53,14 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import 'element-plus/dist/index.css'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
+import {loginService} from '@/api/userService.js'
+import router from "@/router/index.js";
+import {getUserInfoService} from "@/api/userService.js";
+import {useUserStore} from "@/stores/userStore.js";
+
 
 // 表单数据
 const form = reactive({
@@ -83,15 +89,22 @@ const handleLogin = async () => {
   try {
     await loginForm.value.validate()
     loading.value = true
-
-    // 模拟登录请求
-    setTimeout(() => {
-      ElMessage.success('登录成功')
-      loading.value = false
-      // 实际项目中这里进行路由跳转
-    }, 1000)
+    let {username, password} = form
+    const data = await loginService({username, password})
+    if (data.data.code === 200) {
+      const infoRes = await getUserInfoService({username})
+      if (infoRes.data.code === 200) {
+        const store = useUserStore()
+        store.setInfo(infoRes.data.data)
+        console.log(infoRes.data.data)
+      }
+      await router.push('/layout/dashboard')
+    }
   } catch (error) {
-    console.log('表单验证失败:', error)
+    ElMessage.error(error.response.data.detail)
+  }
+  finally {
+    loading.value = false
   }
 }
 </script>
