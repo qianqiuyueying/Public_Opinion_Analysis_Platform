@@ -20,7 +20,7 @@ async def login(user: UserDTO = Body(...),
     # return {"code": 200, "msg": "登录成功", "data": user}
     try:
         user_data = service.login(user)
-        token = create_access_token({"sub": user_data.username})
+        token = create_access_token({"username": user_data.username, 'user_id': user_data.id})
         return {"code": 200, "msg": "登录成功", "data": {"token": token}}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

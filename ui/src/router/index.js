@@ -16,6 +16,7 @@ import Info from '@/pages/user/Info.vue'
 import List from '@/pages/user/List.vue'
 import Board from "@/pages/board/Board.vue";
 import Message from '@/pages/message/Message.vue'
+import MakeSpider from "@/pages/scrapy/MakeSpider.vue";
 
 const routes = [
     {path: "/", component: Home},
@@ -30,6 +31,7 @@ const routes = [
             {
                 path: "/layout/scrapy",
                 children: [
+                    {path: "/layout/scrapy/make-spider", component: MakeSpider},
                     {path: "/layout/scrapy/spider", component: Spider},
                     {path: '/layout/scrapy/task', component: Task},
                     {path: "/layout/scrapy/data", component: Data},

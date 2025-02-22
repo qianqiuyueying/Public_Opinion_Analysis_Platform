@@ -30,7 +30,7 @@
 
         <div class="login-options">
           <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-          <el-link type="primary" :underline="false" href="/forget-password">忘记密码?</el-link>
+          <el-link type="primary" :underline="false" @click="goToForgetPassword">忘记密码?</el-link>
         </div>
 
         <el-button
@@ -44,7 +44,7 @@
         </el-button>
 
         <div class="register-link">
-          没有账号？<el-link type="primary" :underline="false" href="/register">立即注册</el-link>
+          没有账号？<el-link type="primary" :underline="false" @click="goToRegister">立即注册</el-link>
         </div>
       </el-form>
     </el-card>
@@ -52,15 +52,24 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import 'element-plus/dist/index.css'
-import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
-import {loginService} from '@/api/userService.js'
+import {ref, reactive, onMounted} from 'vue'
+import {User, Lock} from '@element-plus/icons-vue'
 import router from "@/router/index.js";
-import {getUserInfoService} from "@/api/userService.js";
+import {loginService, getUserInfoService} from "@/api/userService.js";
 import {useUserStore} from "@/stores/userStore.js";
 
+onMounted(async () => {
+  const username = localStorage.getItem("username");
+  const password = localStorage.getItem("password");
+  if (username && password) {
+    const info = await getUserInfoService({username});
+    if (info) {
+      const store = useUserStore()
+      store.setInfo(info.data.data)
+      router.push({ path: "/layout/dashboard" })
+    }
+  }
+})
 
 // 表单数据
 const form = reactive({
@@ -71,11 +80,11 @@ const form = reactive({
 // 表单验证规则
 const rules = reactive({
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
+    {required: true, message: '请输入用户名', trigger: 'blur'}
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+    {required: true, message: '请输入密码', trigger: 'blur'},
+    {min: 6, message: '密码长度至少6位', trigger: 'blur'}
   ]
 })
 
@@ -89,23 +98,34 @@ const handleLogin = async () => {
   try {
     await loginForm.value.validate()
     loading.value = true
-    let {username, password} = form
+
+    let { username, password } = form
     const data = await loginService({username, password})
     if (data.data.code === 200) {
-      const infoRes = await getUserInfoService({username})
-      if (infoRes.data.code === 200) {
-        const store = useUserStore()
-        store.setInfo(infoRes.data.data)
-        console.log(infoRes.data.data)
+      let info = await getUserInfoService({username})
+      const store = useUserStore()
+      store.setInfo(info.data.data)
+      store.setToken(data.data.data.token)
+      if (rememberMe.value) {
+        localStorage.setItem("username", info.data.data.username)
       }
-      await router.push('/layout/dashboard')
+      router.push('/layout/dashboard')
     }
+
   } catch (error) {
-    ElMessage.error(error.response.data.detail)
+    ElMessage.error(error.message)
   }
   finally {
     loading.value = false
   }
+}
+
+const goToRegister = async () => {
+  router.push('/register')
+}
+
+const goToForgetPassword = () => {
+  router.push('/forget-password')
 }
 </script>
 

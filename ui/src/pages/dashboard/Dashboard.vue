@@ -92,6 +92,7 @@ import {
   DataLine,
 } from '@element-plus/icons-vue'
 
+
 // 舆情趋势图
 const chartRef = ref(null)
 let chartInstance = null

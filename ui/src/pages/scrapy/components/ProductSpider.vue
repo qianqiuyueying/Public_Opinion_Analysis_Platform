@@ -1,11 +1,169 @@
-<script setup>
-
-</script>
-
 <template>
-  $END$
+  <div class="generate-spider-page">
+    <el-card class="spider-info-card">
+      <h2 class="title">爬虫信息</h2>
+
+      <!-- 爬虫信息展示 -->
+      <div class="spider-info">
+        <el-descriptions title="基础信息" :column="2" border>
+          <el-descriptions-item label="名称">
+            <el-input v-model="spiderInfo.name"/>
+          </el-descriptions-item>
+          <el-descriptions-item label="描述">
+            <el-input v-model="spiderInfo.description"/>
+          </el-descriptions-item>
+        </el-descriptions>
+        <!-- class 展示 -->
+        <el-descriptions title="爬虫类型" :column="1" border>
+          <el-descriptions-item label="类型" label-width="30%">
+            {{ spiderInfo.type }}
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <!-- address 展示 -->
+        <el-descriptions title="地址配置" :column="1" border>
+          <el-descriptions-item label="地址类型" label-width="30%">
+            {{ spiderInfo.address.type }}
+          </el-descriptions-item>
+          <el-descriptions-item v-if="spiderInfo.address.type === 'direct'" label="直链地址">
+            {{ spiderInfo.address.links }}
+          </el-descriptions-item>
+          <el-descriptions-item v-else-if="spiderInfo.address.type === 'segment'" label="片段组合规则">
+            <el-table :data="spiderInfo.address.rule" style="width: 100%">
+              <el-table-column prop="baseURL" label="基础URL" />
+            </el-table>
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <!-- request 展示 -->
+        <el-descriptions title="请求配置" :column="1" border>
+          <el-descriptions-item label="请求方法">
+            {{ spiderInfo.request.method }}
+          </el-descriptions-item>
+          <el-descriptions-item label="请求头">
+            <el-table :data="spiderInfo.request.headers" style="width: 100%">
+              <el-table-column prop="key" label="键" />
+              <el-table-column prop="value" label="值" />
+            </el-table>
+          </el-descriptions-item>
+          <el-descriptions-item label="请求参数">
+            <el-table :data="spiderInfo.request.params" style="width: 100%">
+              <el-table-column prop="key" label="键" />
+              <el-table-column prop="value" label="值" />
+            </el-table>
+          </el-descriptions-item>
+          <el-descriptions-item label="请求体">
+            <el-table :data="spiderInfo.request.body" style="width: 100%">
+              <el-table-column prop="key" label="键" />
+              <el-table-column prop="value" label="值" />
+            </el-table>
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <!-- rules 展示 -->
+        <el-descriptions title="规则配置" :column="1" border>
+          <el-descriptions-item label="规则列表">
+            <el-table :data="spiderInfo.rules" style="width: 100%">
+              <el-table-column prop="type" label="类型" />
+              <el-table-column prop="content" label="内容" />
+            </el-table>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
+
+      <!-- 生成爬虫按钮 -->
+      <div class="generate-button">
+        <el-button type="primary" size="large" @click="generateSpider">
+          生成爬虫
+        </el-button>
+      </div>
+    </el-card>
+  </div>
 </template>
 
-<style scoped>
+<script setup>
+const spiderInfo = defineModel('spiderInfo')
+const activeStep = defineModel('activeStep')
 
+// 校验函数
+const validateSpiderInfo = () => {
+  // 校验 name
+  if (!spiderInfo.value.name || spiderInfo.value.name.trim() === '') {
+    ElMessage.error('爬虫名称不能为空')
+    return false
+  }
+
+// 校验 description
+  if (!spiderInfo.value.description || spiderInfo.value.description.trim() === '') {
+    ElMessage.error('爬虫描述不能为空')
+    return false
+  }
+
+
+  // 校验 class
+  if (!['APIClass', 'PageClass'].includes(spiderInfo.value.type)) {
+    ElMessage.error('爬虫类型必须是 APIClass 或 PageClass')
+    return false
+  }
+
+  // 校验 address
+  if (spiderInfo.value.address.type === 'direct') {
+    if (spiderInfo.value.address.links.trim() === '') {
+      ElMessage.error('直链地址不能为空')
+      return false
+    }
+  } else if (spiderInfo.value.address.type === 'segment') {
+    if (spiderInfo.value.address.rule.length < 2) {
+      ElMessage.error('片段组合规则至少需要两条')
+      return false
+    }
+  } else {
+    ElMessage.error('地址类型必须是 direct 或 segment')
+    return false
+  }
+
+  // 校验 rules
+  if (spiderInfo.value.rules.length < 1) {
+    ElMessage.error('规则列表至少需要一条')
+    return false
+  }
+
+  // 所有校验通过
+  return true
+}
+
+// 生成爬虫
+const generateSpider = () => {
+  if (validateSpiderInfo()) {
+    activeStep.value += 1
+  }
+}
+</script>
+
+<style scoped>
+.generate-spider-page {
+  padding: 20px;
+}
+
+.spider-info-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.spider-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.generate-button {
+  margin-top: 20px;
+  text-align: center;
+}
 </style>

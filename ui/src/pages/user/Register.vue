@@ -93,7 +93,7 @@
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Message, Key } from '@element-plus/icons-vue'
-import router from '@/router/index.js'
+import router from "@/router/index.js";
 
 // 表单数据
 const form = reactive({
@@ -103,6 +103,7 @@ const form = reactive({
   confirmPassword: '',
   verificationCode: ''
 })
+
 // 密码确认验证
 const validatePassword = (rule, value, callback) => {
   if (value !== form.password) {
@@ -120,7 +121,7 @@ const rules = reactive({
   ],
   email: [
     { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -187,9 +188,9 @@ const handleRegister = async () => {
 }
 
 // 跳转登录
-const goToLogin = async () => {
+const goToLogin = () => {
   // 实际项目中这里进行路由跳转
-  await router.push('/login')
+  router.push('/login')
 }
 </script>
 

@@ -98,6 +98,15 @@ const form = reactive({
   confirmPassword: ''
 })
 
+// 密码确认验证
+const validateConfirmPassword = (rule, value, callback) => {
+  if (value !== form.newPassword) {
+    callback(new Error('两次输入的密码不一致'))
+  } else {
+    callback()
+  }
+}
+
 // 表单验证规则
 const rules = reactive({
   email: [
@@ -126,14 +135,7 @@ const countdown = ref(0)
 const isCountingDown = computed(() => countdown.value > 0)
 const formRef = ref(null)
 
-// 密码确认验证
-const validateConfirmPassword = (rule, value, callback) => {
-  if (value !== form.newPassword) {
-    callback(new Error('两次输入的密码不一致'))
-  } else {
-    callback()
-  }
-}
+
 
 // 发送验证码
 const sendVerificationCode = async () => {

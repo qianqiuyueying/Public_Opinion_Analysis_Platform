@@ -1,7 +1,6 @@
 from ..model import *
 from db import get_session
 from ..model.data_model import *
-from fastapi import Depends
 from util.tool import now
 from ..model.dto import UserDTO
 from sqlalchemy import and_

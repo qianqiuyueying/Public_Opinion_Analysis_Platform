@@ -38,7 +38,7 @@
             <el-icon :size="60" color="#409EFF"><Monitor /></el-icon>
             <h3 class="feature-title">全面监测</h3>
             <p class="feature-description">
-              覆盖抖音、微博、小红书等主流媒体平台并在持续增加中...
+              覆盖全网舆情数据，实时监控社交媒体、新闻、论坛等多渠道信息。
             </p>
           </div>
         </el-col>
@@ -47,16 +47,16 @@
             <el-icon :size="60" color="#409EFF"><DataAnalysis /></el-icon>
             <h3 class="feature-title">精准分析</h3>
             <p class="feature-description">
-              基于机器学习和 AI 技术，提供情感分析、趋势预测、动态策略等深度分析功能。
+              基于 AI 技术，提供情感分析、热点追踪、趋势预测等深度分析功能。
             </p>
           </div>
         </el-col>
         <el-col :span="8">
           <div class="feature-card">
-            <el-icon :size="60" color="#409EFF"><Cpu /></el-icon>
-            <h3 class="feature-title">流式处理架构</h3>
+            <el-icon :size="60" color="#409EFF"><Bell /></el-icon>
+            <h3 class="feature-title">智能预警</h3>
             <p class="feature-description">
-              基于 redis + RabbitMQ 实时数据处理，支持每秒万级数据吞吐
+              自定义预警规则，及时推送舆情风险，助您快速响应。
             </p>
           </div>
         </el-col>
@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { Monitor, DataAnalysis, Cpu } from '@element-plus/icons-vue'
+import { Monitor, DataAnalysis, Bell } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import {ref} from 'vue'
 
@@ -101,18 +101,18 @@ const router = useRouter()
 const cases = ref([
   {
     image: 'https://via.placeholder.com/800x400',
-    title: '某知名同学舆情管理',
-    description: '通过平台实现全网舆情监控，提升同学声誉管理效率。',
+    title: '某知名企业舆情管理',
+    description: '通过平台实现全网舆情监控，提升品牌声誉管理效率。',
   },
   {
     image: 'https://via.placeholder.com/800x400',
-    title: '某文具机构舆情监测',
+    title: '某政府机构舆情监测',
     description: '实时掌握社会热点，快速响应公众关切。',
   },
   {
     image: 'https://via.placeholder.com/800x400',
-    title: '某外卖机构热点追踪',
-    description: '精准分析评论话题，提升新菜品报道时效性。',
+    title: '某媒体机构热点追踪',
+    description: '精准分析热点话题，提升新闻报道时效性。',
   },
 ])
 
@@ -189,7 +189,6 @@ const goToRegister = () => {
   0 0 60px rgba(255,0,110,0.2);
   animation: neonGlow 2s ease-in-out infinite alternate;
 }
-
 
 .banner-subtitle {
   font-size: 20px;

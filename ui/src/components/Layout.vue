@@ -1,9 +1,9 @@
 <template>
-  <div class="admin-container">
+  <el-container style="height: 100vh">
     <!-- 顶部导航栏 -->
     <el-header class="header">
       <div class="header-left">
-        <span class="system-title">舆情分析平台管理后台</span>
+        <span class="system-title">舆情分析平台</span>
       </div>
       <div class="header-right">
         <el-badge :value="newMessageCount" class="notification-badge">
@@ -14,7 +14,7 @@
         <el-dropdown>
           <div class="user-info">
             <el-avatar :size="30" :src="store.avatar"/>
-            <span class="user-name">{{store.username}}</span>
+            <span class="user-name">{{ store.username }}</span>
             <el-icon class="arrow-down">
               <ArrowDown/>
             </el-icon>
@@ -29,10 +29,9 @@
       </div>
     </el-header>
 
-    <!-- 整体布局 -->
-    <div class="main-wrapper">
+    <el-container>
       <!-- 左侧菜单栏 -->
-      <el-aside class="sidebar" :width="isCollapse ? '64px' : '240px'">
+      <el-aside :width="isCollapse ? '64px' : '240px'">
         <div class="collapse-btn" @click="toggleCollapse">
           <el-icon :size="20">
             <Expand v-if="isCollapse"/>
@@ -46,6 +45,8 @@
             :collapse="isCollapse"
             router
             unique-opened
+            :collapse-transition="false"
+            :default-openeds="openeds"
         >
           <el-menu-item index="/layout/dashboard">
             <el-icon>
@@ -62,13 +63,14 @@
               </el-icon>
               <span>爬虫管理</span>
             </template>
+            <el-menu-item index="/layout/scrapy/make-spider">制作爬虫</el-menu-item>
             <el-menu-item index="/layout/scrapy/spider">爬虫管理</el-menu-item>
             <el-menu-item index="/layout/scrapy/task">任务管理</el-menu-item>
             <el-menu-item index="/layout/scrapy/data">数据管理</el-menu-item>
           </el-sub-menu>
 
           <!-- 数据分析模块 -->
-          <el-sub-menu index="1">
+          <el-sub-menu index="3">
             <template #title>
               <el-icon>
                 <DataAnalysis/>
@@ -81,21 +83,15 @@
           </el-sub-menu>
 
           <!-- 用户管理模块 -->
-          <el-sub-menu index="/user">
-
+          <el-sub-menu index="4">
             <template #title>
               <el-icon>
                 <User/>
               </el-icon>
               <span>用户管理</span>
             </template>
-
-            <el-menu-item index="/layout/user/info">
-              个人信息
-            </el-menu-item>
-            <el-menu-item index="/layout/user/list">
-              用户列表
-            </el-menu-item>
+            <el-menu-item index="/layout/user/info">个人信息</el-menu-item>
+            <el-menu-item index="/layout/user/list">用户列表</el-menu-item>
           </el-sub-menu>
 
           <!-- 消息 -->
@@ -106,28 +102,39 @@
             <span>消息</span>
           </el-menu-item>
 
-          <!--  公告板  -->
+          <!-- 公告板 -->
           <el-menu-item index="/layout/board">
             <el-icon>
               <DataBoard/>
             </el-icon>
             <span>公告板</span>
           </el-menu-item>
-
         </el-menu>
       </el-aside>
 
       <!-- 主内容区域 -->
-      <main class="content-wrapper">
-        <router-view/>
-      </main>
-    </div>
-  </div>
+      <el-container>
+        <el-main class="content-wrapper">
+          <router-view/>
+        </el-main>
+        <el-footer class="neko-footer">
+          <div class="footer-content">
+            <p class="footer-text">
+              舆情分析平台 @2025 Created by 秋神
+            </p>
+            <p class="footer-text">
+              仅供用于交流学习，严禁用于商业用途
+            </p>
+            </div>
+        </el-footer>
+      </el-container>
+    </el-container>
+  </el-container>
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue'
-import {useRouter} from 'vue-router'
+import {ref, onMounted} from 'vue';
+import {useRouter} from 'vue-router';
 import {
   DataAnalysis,
   DataBoard,
@@ -136,50 +143,44 @@ import {
   Expand,
   Fold,
   ArrowDown,
-  Location, Message
-} from '@element-plus/icons-vue'
+  Location,
+  Message
+} from '@element-plus/icons-vue';
 import {useUserStore} from "@/stores/userStore.js";
 import {getUserInfoService} from "@/api/userService.js";
 
+const newMessageCount = ref(0);
+const router = useRouter();
+const activeMenu = ref('/layout/dashboard');
+const isCollapse = ref(false);
+const store = useUserStore();
+const openeds = ref(["2", "3", "4"]); // 默认展开的菜单
+
 onMounted(async () => {
-
-})
-
-
-const newMessageCount = ref(0)
-const router = useRouter()
-const activeMenu = ref('/layout/dashboard')
-const isCollapse = ref(false)
-const store = useUserStore()
+  // 初始化逻辑
+});
 
 const toggleCollapse = () => {
-  isCollapse.value = !isCollapse.value
-}
+  isCollapse.value = !isCollapse.value;
+};
 
 const handleToMessage = () => {
-  router.push('/layout/message')
-  activeMenu.value = '/layout/message'
-}
+  router.push('/layout/message');
+  activeMenu.value = '/layout/message';
+};
 
 const handleToInfo = () => {
-  router.push('/layout/user/info')
-  activeMenu.value = '/layout/user/info'
-}
-
+  router.push('/layout/user/info');
+  activeMenu.value = '/layout/user/info';
+};
 
 const handleLogout = () => {
-  router.push('/login')
-  // 实际项目需添加退出登录逻辑
-}
+  localStorage.removeItem('username');
+  router.push('/login');
+};
 </script>
 
 <style scoped>
-.admin-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -227,18 +228,7 @@ const handleLogout = () => {
   cursor: pointer;
 }
 
-.main-wrapper {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
 
-.sidebar {
-  background: #fff;
-  border-right: 1px solid #e6e6e6;
-  transition: width 0.3s;
-  position: relative;
-}
 
 .collapse-btn {
   height: 48px;
@@ -253,14 +243,32 @@ const handleLogout = () => {
   border-right: none;
 }
 
-.nav-menu:not(.el-menu--collapse) {
-  width: 240px;
-}
-
 .content-wrapper {
   flex: 1;
-  padding: 24px;
   background: #f5f7fa;
-  overflow-y: auto;
 }
+.neko-footer {
+  height: 70px !important;
+  background: linear-gradient(145deg, #f0f2f5, #e6e8eb);
+  border-top: 1px solid #dcdfe6;
+  padding: 10px 0;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-text {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #666;
+  font-family: 'Arial', sans-serif;
+}
+
+
+
+
 </style>

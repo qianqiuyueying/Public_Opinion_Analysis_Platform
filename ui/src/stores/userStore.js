@@ -10,6 +10,9 @@ export const useUserStore = defineStore('user', () => {
     const lastLogin = ref()  // 上次登录时间
     const role = ref()  // 对应权限
     const token = ref()
+    const setToken = (newToken) => {
+        token.value = newToken
+    }
     const setInfo = (info) => {
         id.value = info.id
         avatar.value = info.avatar
@@ -20,6 +23,17 @@ export const useUserStore = defineStore('user', () => {
         role.value = info.role
         token.value = info.token
     }
-    return {id, username, avatar, email, createTime, lastLogin, role, token, setInfo}
+    const reset = () => {
+        id.value = ''
+        avatar.value = ''
+        username.value = ''
+        email.value = ''
+        createTime.value = ''
+        lastLogin.value = ''
+        role.value = ''
+        token.value = ''
+    }
+
+    return {id, username, avatar, email, createTime, lastLogin, role, token, setInfo, setToken, reset}
 })
 

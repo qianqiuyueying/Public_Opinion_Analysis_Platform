@@ -63,3 +63,17 @@ def create_access_token(data: dict):
     生成token
     """
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_access_token(token: str):
+    """
+    解码token并返回其中的数据
+    :param token: JWT token
+    :return: 解码后的数据
+    """
+    try:
+        decoded_data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return decoded_data
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")

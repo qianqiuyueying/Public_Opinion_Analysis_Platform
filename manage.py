@@ -5,17 +5,17 @@ from app import init_app
 from db import init_db
 from config import *
 
-
-
-
 app = init_app()
-
-
-
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+@app.get("/test")
+async def test(request: Request):
+    print(request.headers)
+    return {"code": 200, "msg": "测试成功"}
+
 
 if __name__ == '__main__':
     # app = init_app()

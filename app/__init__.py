@@ -3,6 +3,7 @@ from config import *
 import jwt
 from db import init_db
 from .user.controller.userController import user_router
+from .scrapy.controller import scrapy_router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -29,11 +30,12 @@ def init_app():
             return response
         
         white_list = [
+            "/docs",
+            "/openapi.json",
             "/user/login",
             "/user/register",
             "/user/send_verify_code",
-            '/user/info',
-            "/user/list"
+            "/user/info",
         ]
         
         # 精确匹配路径
@@ -57,5 +59,6 @@ def init_app():
         return response
     
     app.include_router(user_router)
+    app.include_router(scrapy_router)
     
     return app
