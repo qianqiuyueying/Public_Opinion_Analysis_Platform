@@ -1,10 +1,3 @@
-<script setup>
-import { Connection, ChromeFilled } from "@element-plus/icons-vue";
-
-// 使用 defineModel 声明双向绑定的模型
-const spiderInfo = defineModel('spiderInfo');
-</script>
-
 <template>
   <div class="spider-selector">
     <h1 class="title">选择爬虫类型</h1>
@@ -12,7 +5,7 @@ const spiderInfo = defineModel('spiderInfo');
       <div
           class="spider-card"
           :class="{ active: spiderInfo.type === 'APIClass' }"
-          @click="spiderInfo.type = 'APIClass'; spiderInfo.description = 'API类型爬虫的描述'"
+          @click="handleToAPIClass"
       >
         <div class="card-icon">
           <el-icon :size="60">
@@ -28,7 +21,7 @@ const spiderInfo = defineModel('spiderInfo');
       <div
           class="spider-card"
           :class="{ active: spiderInfo.type === 'PageClass' }"
-          @click="spiderInfo.type = 'PageClass'; spiderInfo.description = '网页类型爬虫的描述'"
+          @click="handleToPageClass"
       >
         <div class="card-icon">
           <el-icon :size="60">
@@ -43,6 +36,27 @@ const spiderInfo = defineModel('spiderInfo');
     </div>
   </div>
 </template>
+
+<script setup>
+import { Connection, ChromeFilled } from "@element-plus/icons-vue";
+
+// 使用 defineModel 声明双向绑定的模型
+const spiderInfo = defineModel('spiderInfo');
+
+const handleToAPIClass = () => {
+  spiderInfo.value.type = 'APIClass';
+  spiderInfo.value.rules = [
+    {type: "select", content: ""}
+  ]
+}
+
+const handleToPageClass = () => {
+  spiderInfo.value.type = 'PageClass';
+  spiderInfo.value.rules = [
+    {type: "select", content: ""}
+  ]
+}
+</script>
 
 <style scoped>
 .spider-selector {

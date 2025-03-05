@@ -29,27 +29,32 @@ def init_app():
             response = await call_next(request)
             return response
         
+        # 创建白名单，方便debug以及未登录用户使用
         white_list = [
             "/docs",
             "/openapi.json",
             "/user/login",
             "/user/register",
-            "/user/send_verify_code",
+            "/user/send-verify-code",
             "/user/info",
+            '/icons/icon_zh_48.png'
         ]
         
-        # 精确匹配路径
         if request.url.path in white_list:
             response = await call_next(request)
             return response
         
+        # 校验用户是否登录
         authorization: str = request.headers.get("Authorization")
         if not authorization or not authorization.startswith("Bearer "):
             raise HTTPException(status_code=401, detail="Missing or invalid token")
         
+        # 取出token后续使用
         token = authorization[7:]
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            # 验证是否有权访问路径
+            # 将登录用户的必要信息存进request，方便controller使用
             request.state.user = payload
         except jwt.PyJWTError as e:
             raise HTTPException(status_code=401, detail="Invalid token")

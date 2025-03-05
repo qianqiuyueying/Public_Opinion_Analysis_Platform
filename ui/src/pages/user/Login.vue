@@ -113,7 +113,7 @@ const handleLogin = async () => {
     }
 
   } catch (error) {
-    ElMessage.error(error.message)
+    ElMessage.error(error.response.data.detail)
   }
   finally {
     loading.value = false

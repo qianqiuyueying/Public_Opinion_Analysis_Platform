@@ -7,12 +7,13 @@ export const loginService = async ({username, password}) => {
 
 // 注册接口
 export const registerService = async ({username, password, email, code}) => {
+    console.log(code)
     return request.post("/user/register", {username, password, email, code})
 }
 
 // 发送邮箱验证码
-export const sendVerificationCodeService = async (data) => {
-    return request.post('/user/sendVerificationCode', data)
+export const sendVerificationCodeService = async ({username, email}) => {
+    return request.post('/user/send-verify-code', {username, email})
 }
 
 // 获取用户信息

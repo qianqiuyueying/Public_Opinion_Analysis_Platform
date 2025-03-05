@@ -48,10 +48,10 @@
           />
         </el-form-item>
 
-        <el-form-item prop="verificationCode">
+        <el-form-item prop="code">
           <div class="code-input">
             <el-input
-                v-model="form.verificationCode"
+                v-model="form.code"
                 placeholder="请输入验证码"
                 :prefix-icon="Key"
                 size="large"
@@ -59,7 +59,7 @@
             <el-button
                 type="primary"
                 :disabled="isCountingDown"
-                @click="sendVerificationCode"
+                @click="handleSendCode"
                 class="code-btn"
             >
               {{ countdown > 0 ? `${countdown}s后重试` : '获取验证码' }}
@@ -94,6 +94,7 @@ import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Message, Key } from '@element-plus/icons-vue'
 import router from "@/router/index.js";
+import {sendVerificationCodeService, registerService} from "@/api/userService.js";
 
 // 表单数据
 const form = reactive({
@@ -101,7 +102,7 @@ const form = reactive({
   email: '',
   password: '',
   confirmPassword: '',
-  verificationCode: ''
+  code: ''
 })
 
 // 密码确认验证
@@ -121,7 +122,7 @@ const rules = reactive({
   ],
   email: [
     { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -131,7 +132,7 @@ const rules = reactive({
     { required: true, message: '请再次输入密码', trigger: 'blur' },
     { validator: validatePassword, trigger: 'blur' }
   ],
-  verificationCode: [
+  code: [
     { required: true, message: '请输入验证码', trigger: 'blur' },
     { len: 6, message: '验证码长度为6位', trigger: 'blur' }
   ]
@@ -147,22 +148,29 @@ const isCountingDown = computed(() => countdown.value > 0)
 
 
 // 发送验证码
-const sendVerificationCode = () => {
-  if (!form.email) {
-    ElMessage.warning('请输入邮箱地址')
-    return
+const handleSendCode = async () => {
+  try {
+    if (!form.email) {
+      ElMessage.warning('请输入邮箱地址')
+      return
+    }
+    let {username, email} = form
+    const data = await sendVerificationCodeService({username, email})
+    if (data.data.code === 200) {
+      // 模拟发送验证码
+      countdown.value = 60
+      const timer = setInterval(() => {
+        countdown.value--
+        if (countdown.value <= 0) {
+          clearInterval(timer)
+        }
+      }, 1000)
+    }
+    ElMessage.success('验证码已发送')
+  } catch (e) {
+    ElMessage.error(e.response.data.detail)
   }
 
-  // 模拟发送验证码
-  countdown.value = 60
-  const timer = setInterval(() => {
-    countdown.value--
-    if (countdown.value <= 0) {
-      clearInterval(timer)
-    }
-  }, 1000)
-
-  ElMessage.success('验证码已发送')
 }
 
 // 注册方法
@@ -176,14 +184,17 @@ const handleRegister = async () => {
     await registerForm.value.validate()
     loading.value = true
 
-    // 模拟注册请求
-    setTimeout(() => {
+    let {username, email, password, code} = form
+    const data = await registerService({username, email, password, code})
+    console.log(data)
+    if (data.data.code === 200) {
+      router.push({ path: '/login' })
       ElMessage.success('注册成功')
-      loading.value = false
-      // 实际项目中这里进行路由跳转
-    }, 1000)
+    }
   } catch (error) {
-    console.log('表单验证失败:', error)
+    ElMessage.error(error.response.data.detail)
+  } finally {
+    loading.value = false
   }
 }
 

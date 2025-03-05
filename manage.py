@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi import Request
 import jwt
 import uvicorn
 from app import init_app
@@ -6,10 +7,6 @@ from db import init_db
 from config import *
 
 app = init_app()
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
 
 @app.get("/test")
 async def test(request: Request):

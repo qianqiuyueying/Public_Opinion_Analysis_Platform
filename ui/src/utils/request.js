@@ -13,7 +13,6 @@ request.interceptors.request.use(config => {
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log(token)
     }
     return config;
 }, error => {
@@ -27,11 +26,6 @@ request.interceptors.response.use(response => {
         router.push("/login");
     }
     return response;
-}, error => {
-    if (error) {
-        console.log(error)
-        Elmessage.error(response.data.message);
-    }
 })
 
 

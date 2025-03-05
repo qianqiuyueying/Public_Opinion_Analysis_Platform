@@ -82,6 +82,8 @@
 </template>
 
 <script setup>
+import {createSpiderService} from "@/api/scrapyService.js";
+
 const spiderInfo = defineModel('spiderInfo')
 const activeStep = defineModel('activeStep')
 
@@ -133,9 +135,13 @@ const validateSpiderInfo = () => {
 }
 
 // 生成爬虫
-const generateSpider = () => {
+const generateSpider = async () => {
   if (validateSpiderInfo()) {
-    activeStep.value += 1
+    let {name, description, type, address, request, rules} = spiderInfo;
+    const data = await createSpiderService({name, description, type, address, request, rules});
+    if (data.data.code === 200) {
+      activeStep.value += 1;
+    }
   }
 }
 </script>

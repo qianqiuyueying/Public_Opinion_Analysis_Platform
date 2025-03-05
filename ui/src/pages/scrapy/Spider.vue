@@ -1,9 +1,20 @@
 <template>
   <div class="spider-management-page">
-    <el-card class="management-card">
-
-      <el-table :data="spiderList" style="width: 100%">
-        <el-table-column label="id" prop="id" width="100"/>
+    <el-card class="management-card"
+             :body-style="{
+        height:'100%',
+        width:'100%',
+        boxSizing:'border-box',
+        display: 'flex',        // 新增flex布局
+        flexDirection: 'column' // 纵向排列
+      }">
+      <!-- 表格部分 -->
+      <el-table
+          :data="spiderList"
+          style="width: 100%"
+          class="auto-height-table"
+      >
+        <el-table-column type="index" :index="getIndex"/>
         <el-table-column label="名称" prop="name" width="150" />
         <el-table-column label="描述" prop="description" />
         <el-table-column align="right">
@@ -23,6 +34,9 @@
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty/>
+        </template>
       </el-table>
 
       <!-- 分页器 -->
@@ -43,7 +57,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 
 const currentPage = ref(1)
 const pageSize = ref(20)
@@ -52,8 +66,12 @@ const total = ref(100)
 
 const spiderList = ref()
 
-onMounted(() => {
+const getIndex = (index) => {
+  return index
+}
 
+onMounted(() => {
+  // 初始化数据
 })
 
 const handleSizeChange = () => {
@@ -67,28 +85,25 @@ const handleCurrentChange = (currentPage) => {
 
 <style scoped>
 .spider-management-page {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  height: 90%;
+  height: 82vh; /* 改为视窗单位更可靠 */
 }
 
 .management-card {
-  width: 100%;
-  max-width: 1200px;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  height: 100%;
+  /* 移除padding改用body-style控制 */
 }
 
+.auto-height-table {
+  flex: 1;
+  min-height: 100px; /* 防止内容过少时高度塌陷 */
+  overflow: auto;
+}
 
 .pagination-section {
-  padding: 10px;
-  background-color: #f5f7fa;
-  border-top: 1px solid #e4e7ed;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
+  flex-shrink: 0; /* 防止被压缩 */
+  padding: 16px;
+  background: #fff;
+  border-top: 1px solid #ebeef5;
+  margin-top: auto; /* 确保始终位于底部 */
 }
 </style>

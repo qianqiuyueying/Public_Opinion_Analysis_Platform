@@ -4,6 +4,7 @@ from util.tool import *
 from rdb import *
 from typing import List
 from fastapi import HTTPException
+from util.spider import Client
 
 class scrapyService:
     """
@@ -67,5 +68,17 @@ class scrapyService:
             respository = scrapyRepository()
             return respository.get_spider_list(user_id, page, page_size)
         except Exception as e:
+            raise e
+        
+    def get_preview_data(self, spider: SpiderDTO):
+        """
+        获取爬虫预览数据
+        :param spider: 爬虫信息
+        """
+        try:    
+            print(spider)
+            client = Client(address=spider.address, type=spider.type, request=spider.request)
+            return client.run()
+        except Exception as e:    
             raise e
     

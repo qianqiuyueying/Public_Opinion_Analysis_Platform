@@ -42,16 +42,38 @@ def now() -> str:
 
 
 import yagmail
-from random import randint
-def send_verify_code(email: str, code: int) -> None:
+
+def send_verify_code_to_email(username: str, email: str, code: int) -> None:
     """
     发送验证码
+    :param username: 用户名
     :param email: 邮箱地址
     :param code: 验证码
     """
+    # 邮件主题
+    subject = "【舆情分析平台】邮箱验证码"
+
+    # 邮件正文模板
+    content = f"""
+尊敬的 {username}，您好！
+
+您正在注册舆情分析平台账号，本次请求的验证码为：
+
+{code}
+
+请在 10 分钟内使用该验证码完成验证。
+
+如非本人操作，请忽略此邮件。
+
+感谢您对舆情分析平台的支持！
+
+舆情分析平台
+{now()}
+"""
+
+    # 使用 yagmail 发送邮件
     yag = yagmail.SMTP(user="3044481323@qq.com", password="nmosvcwlzswhdcfg", host='smtp.qq.com', encoding='utf-8')
-    content = f"您的验证码是：{code}"
-    yag.send(email, '舆情分析平台注册', content)
+    yag.send(to=email, subject=subject, contents=content)
     yag.close()
 
 
@@ -64,16 +86,13 @@ def create_access_token(data: dict):
     """
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
-def decode_access_token(token: str):
+from fastapi import Request, HTTPException
+async def get_current_user(request: Request):
     """
-    解码token并返回其中的数据
-    :param token: JWT token
-    :return: 解码后的数据
+    当前用户的token并解析
+    获得username, id, role
     """
-    try:
-        decoded_data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return decoded_data
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    user = request.state.user
+    if not user: 
+        raise HTTPException(status_code=401, detail="未登录")
+    return user

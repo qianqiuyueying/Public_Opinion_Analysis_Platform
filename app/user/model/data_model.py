@@ -2,9 +2,9 @@ from sqlalchemy import Column, Integer, String, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from db import Base
 from datetime import datetime
-from enum import Enum as PyEnum
+from enum import IntEnum
 
-class Role(PyEnum):
+class Role(IntEnum):
     """
     角色枚举
     """
@@ -21,7 +21,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment='用户ID')
     username = Column(String(50), nullable=False, unique=True, comment='用户名')
-    avatar = Column(String(200), nullable=True, comment='头像')
+    avatar = Column(String(200), default='/defaultAvatar.png', nullable=True, comment='头像')
     password = Column(String(60), nullable=False, comment='密码')
     email = Column(String(50), nullable=False, unique=True, comment='邮箱')
     created_at = Column(DateTime, nullable=False, default=datetime.now, comment='创建时间')

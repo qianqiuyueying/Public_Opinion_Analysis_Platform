@@ -1,13 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
-class Address(BaseModel):
-    """
-    网址数据传输对象
-    """
-    type: str
-    links: Optional[str]
-    rule: Optional[dict]
 
 class Request(BaseModel):
     """
@@ -23,10 +16,10 @@ class SpiderDTO(BaseModel):
     爬虫数据传输对象
     """
     id: Optional[int] = None
-    name: str
+    name: Optional[str] = None
     description: Optional[str] = None
+    address: Optional[str]
     type: str
-    addr: Address
     request: Request
-    rules: Optional[list] = None
+    rules: list[dict]
     

@@ -79,7 +79,7 @@ class UserRepository:
                 }
                 return user_dict
             else:
-                raise HTTPException(status_code=404, detail="用户不存在")
+                return {}
         except Exception as e:
             raise e
 

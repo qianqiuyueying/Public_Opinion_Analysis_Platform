@@ -193,8 +193,8 @@ const removeLastBody = () => {
   if (spiderInfo.value.request.body.length > 0) {
     spiderInfo.value.request.body.pop()
   }
-  if (requestConfig.value.body.length > 0) {
-    requestConfig.value.body.pop();
+  if (spiderInfo.value.body.length > 0) {
+    spiderInfo.value.body.pop();
   }
 };
 </script>
@@ -230,7 +230,7 @@ const removeLastBody = () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 430px; /* 固定高度，确保布局稳定 */
+  height: 38vh; /* 固定高度，确保布局稳定 */
   border: 1px solid #e4e7ed; /* 添加边框，颜色为浅灰色 */
   border-radius: 8px; /* 可选：添加圆角边框 */
   padding: 20px; /* 可选：添加内边距，让内容不紧贴边框 */
@@ -241,6 +241,7 @@ const removeLastBody = () => {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
+  margin-top: 0;
 }
 
 .input-group {

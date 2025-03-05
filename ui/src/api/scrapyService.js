@@ -1,13 +1,32 @@
-import request from '../utils/request.js'
-import {registerService} from "@/api/userService.js";
-
-// 测试单条网址爬虫接口
+import request_ from '../utils/request.js'
 
 // 测试爬虫接口
+export const testSpiderService = async ({type, address, request, rules}) => {
+    return request_.post('/scrapy/test-spider', {type, address, request, rules})
+}
+
+// 预览爬虫预览结果接口
+export const getPreviewDataService = async ({ type, address, request, rules }) => {
+    console.log(address)
+    return request_.post("/scrapy/get-preview-data", {type, address, request, rules})
+}
+
+// 获取爬虫信息接口
+export const getSpiderService = async () => {
+
+}
+
+// 修改爬虫信息接口
+export const updateSpiderService = async () => {
+
+}
 
 // 获取爬虫列表接口
+export const getSpiderList = () => {
 
-// 测试接口
-export const testService = async () => {
-    return request.post("/scrapy/test")
+}
+
+// 创建爬虫
+export const createSpiderService = async ({name, description, type, address, request, rules}) => {
+    return request.post("/scrapy/create-spider", {name, description, type, address, request, rules})
 }

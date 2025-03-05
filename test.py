@@ -1,6 +1,5 @@
-from util.tool import *
-from rdb import *
+from DrissionPage import SessionPage
 
-code = "123456"
-send_verify_code('qianqiuyueying@outlook.com', code)
-store_verify_code('qianqiuyueying@outlook.com', code)
+session = SessionPage()
+data = session.get("https://www.baidu.com")
+print(data)

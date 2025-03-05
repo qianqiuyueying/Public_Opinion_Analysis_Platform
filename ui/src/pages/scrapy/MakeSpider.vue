@@ -40,23 +40,23 @@ import ResultView from "@/pages/scrapy/components/ResultView.vue";
 import ProductSpider from "@/pages/scrapy/components/ProductSpider.vue";
 import {ArrowLeft, ArrowRight} from "@element-plus/icons-vue";
 import Celebration from "@/pages/scrapy/components/Celebration.vue";
-import {testService} from '@/api/scrapyService.js'
+import {createSpiderService} from '@/api/scrapyService.js'
 
 onMounted(async () => {
-  await testService()
+
 })
 
 
 const activeStep = ref(0); // 当前激活的步骤
 const spiderInfo = reactive({
-  name: "",
-  description: "",
-  type: "APIClass",
+  name: "",  // 昵称
+  description: "",  // 描述
+  type: "APIClass",  // 爬虫类型
   address: {
     type: "direct",  // 默认直链类型
-    links: "",
+    links: "",  // 直链们
     rule: [
-      { baseURL: "" },
+      { type: "baseURL", value: "" },
     ]
   },
   request: {
@@ -66,7 +66,7 @@ const spiderInfo = reactive({
     body: [],
   },
   rules: [
-    {type: "select", content: ""}
+    {'source': "root", "operate": ""}
   ],
 })
 
@@ -132,8 +132,11 @@ const handleNextStep = async () => {
   } else if (activeStep.value === 5) {
     // 校验
     if (validateSpiderInfo()) {
-      // 发送生成爬虫请求
-      activeStep.value += 1;
+      let {name, description, type, address, request, rules} = spiderInfo;
+      const data = await createSpiderService({name, description, type, address, request, rules});
+      if (data.data.code === 200) {
+        activeStep.value += 1;
+      }
     }
   } else {
     ElMessage.success('爬虫已经制作完成了哦~请前往任务管理开始采集任务吧！')

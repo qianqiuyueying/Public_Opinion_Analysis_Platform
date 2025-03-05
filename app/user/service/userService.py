@@ -10,7 +10,7 @@ class userService:
     """
     用户模块的服务层
     """
-    def login(self, user: UserDTO) -> None:
+    def login(self, user: UserDTO) -> User:
         """
         用户登录
         :param user: 用户信息
@@ -35,16 +35,21 @@ class userService:
         except Exception as e:
             raise e
         
-    def send_verify_code(self, email: str) -> None:
+    def send_verify_code1(self, username: str, email: str) -> None:
         """
         发送验证码
+        :param username: 用户名
         :param email: 邮箱地址
         """
-        try:
+        try:    
+            # 判断邮箱是否已经注册
+            respository = UserRepository()
+            if respository.get_user_by_conditions(email=email):
+                raise HTTPException(status_code=400, detail="邮箱已注册")
             # 生成验证码
             code = randint(100000, 999999)
             # 发送验证码
-            send_verify_code(email, code)
+            send_verify_code_to_email(username, email, code)
             # 往 Redis 中存储验证码
             store_verify_code(email, code)
         except Exception as e:
@@ -59,12 +64,19 @@ class userService:
             # 校验验证码
             code = user.code
             true_code = get_verify_code(user.email)
+            # 判断验证码是否存在
+            if not true_code:
+                raise HTTPException(status_code=400, detail="请重新发送验证码")
+            # 判断验证码是否正确
             if code != true_code:
                 raise HTTPException(status_code=400, detail="验证码错误")
             # 判断用户是否存在
             respository = UserRepository()
             if respository.get_user_by_username(user.username) is not None:
                 raise HTTPException(status_code=400, detail="用户已存在")
+            # 判断邮箱是否已经注册
+            if respository.get_user_by_conditions(email=user.email):
+                raise HTTPException(status_code=400, detail="邮箱已注册")
             # hash 密码
             password_manager = PasswordManager()
             user.password = password_manager.hash_password(user.password)

@@ -3,10 +3,29 @@
     <el-card class="main-card">
       <!-- 卡片头部 -->
       <div class="card-header">
-        <h2 class="title">测试网址配置</h2>
+        <h2 class="title">
+          测试网址配置
+        </h2>
         <el-radio-group v-model="spiderInfo.address.type" class="mode-switch" @change="handleChange">
-          <el-radio-button label="direct" value="direct">直链记录</el-radio-button>
-          <el-radio-button label="segment" value="segment">智能片段组合</el-radio-button>
+          <el-tooltip placement="top">
+            <template #content>
+              <div>
+                请输入所有目标网址，多个网址之间使用英文分号（;）分隔。<br>
+                例如：https://example.com;https://example.org
+              </div>
+            </template>
+            <el-radio-button label="direct" value="direct">直链记录</el-radio-button>
+          </el-tooltip>
+
+          <el-tooltip placement="top">
+            <template #content>
+              <div>
+                通过编辑规则，自动生成多条目标网址。<br>
+                适用于需要批量生成网址的场景。
+              </div>
+            </template>
+            <el-radio-button label="segment" value="segment">智能片段组合</el-radio-button>
+          </el-tooltip>
         </el-radio-group>
       </div>
 
@@ -16,27 +35,19 @@
             v-model="spiderInfo.address.links"
             placeholder="请输入单条测试网址，或用英文分号 ';' 分隔的多条网址"
             type="textarea"
-            :rows="4"
+            :rows="14"
             class="url-input"
         />
-        <div class="instructions">
-          <h3>使用说明</h3>
-          <p>1. 输入单条测试网址，或使用分号分隔的多条网址。</p>
-          <p>2. 系统会自动解析并记录所有网址。</p>
-          <p>3. 支持直接粘贴网址，系统会自动校验格式。</p>
-          <p>3. 提供网址仅测试使用，不建议输入过多网址，以免影响测试效率</p>
-        </div>
       </div>
 
       <!-- 智能片段组合模式 -->
       <div v-else-if="spiderInfo.address.type === 'segment'" class="segment">
         <div class="base-url-input">
           <el-input
-              v-model="spiderInfo.address.rule[0].baseURL"
+              v-model="spiderInfo.address.rule[0].value"
               placeholder="请输入固定网址开头"
               class="segment-input"
           >
-            <template #prepend>https://</template>
           </el-input>
         </div>
 
@@ -46,13 +57,12 @@
               :key="index"
               class="segment-group"
           >
-            <template v-if="segment.type === 'fixed'">
+            <template v-if="segment.type === 'URLSegment'">
               <el-input
                   v-model="segment.value"
                   placeholder="请输入固定链接部分"
                   class="segment-input fixed-input"
               >
-                <template #prepend>/</template>
               </el-input>
             </template>
             <template v-else-if="segment.type === 'loop'">
@@ -88,7 +98,7 @@
         <div class="fixed-button-container">
           <el-button
               type="primary"
-              @click="addFixedSegment"
+              @click="addURLSegment"
               :disabled="spiderInfo.address.rule.length >= 5"
           >
             添加固定链接
@@ -114,13 +124,20 @@
 </template>
 
 <script setup>
+import {ref} from 'vue'
+import Tips from "@/components/Tips.vue";
 
 const spiderInfo = defineModel('spiderInfo')
+
+const tipContent = ref("测试提示")
 
 const handleChange = () => {
   if (spiderInfo.value.address.type === 'direct') {
     spiderInfo.value.address.rule = [
-      { baseURL: "" }
+      {
+        type: "baseURL",
+        value: ""
+      }
     ]
   } else if (spiderInfo.value.address.type === 'segment') {
     spiderInfo.value.address.links = ""
@@ -128,10 +145,10 @@ const handleChange = () => {
 }
 
 // 添加固定链接片段
-const addFixedSegment = () => {
+const addURLSegment = () => {
   if (spiderInfo.value.address.rule.length < 5) {
     spiderInfo.value.address.rule.push({
-      type: 'fixed',
+      type: 'URLSegment',
       value: '',
     })
   }
@@ -195,11 +212,6 @@ const removeLastSegment = () => {
   margin-bottom: 20px;
 }
 
-.instructions {
-  padding: 20px;
-  background-color: #f5f7fa;
-  border-radius: 8px;
-}
 
 .instructions h3 {
   margin-top: 0;
