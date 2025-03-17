@@ -25,5 +25,8 @@ async def preview_data(
     spiderInfo: SpiderDTO = Body(...),
     service = Depends(scrapyService)
 ):
-    service.get_preview_data(spiderInfo)
-    return {'code': 200, "msg": "测试成功"}
+    try:
+        data = service.get_preview_data(spiderInfo)
+        return {'code': 200, "msg": "获取成功", "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

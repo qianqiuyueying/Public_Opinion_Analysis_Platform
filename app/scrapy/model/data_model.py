@@ -19,7 +19,6 @@ class Spider(Base):
     name = Column(String(255), nullable=False, comment='爬虫名称')
     description = Column(String(1000), comment='爬虫描述')
     type = Column(Enum(Type), nullable=False, comment='爬虫类型')
-    address = Column(JSON, nullable=False, comment='爬虫网址及相应规则')
     request = Column(JSON, nullable=False, comment='爬虫请求参数')
     rules = Column(JSON, nullable=False, comment='爬虫解析规则')
     created_at = Column(DateTime, nullable=False, default=datetime.now, comment='创建时间')

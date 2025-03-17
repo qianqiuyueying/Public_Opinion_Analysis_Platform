@@ -20,18 +20,35 @@ class APISpider():
         :param json: 请求体
         """
         super().__init__()
-        driver = SessionPage()
-        if method == "get":
-            self.data = driver.get(address, params=params, headers=headers)
-        elif method == 'post':
-            self.data = driver.post(address, params=params, headers=headers, json=json)
+        self.session = SessionPage()
+        if method == "GET":
+            self.session.get(address, params=params, headers=headers)
+        elif method == 'POST':
+            self.session.post(address, params=params, headers=headers, json=json)
 
-    def run(self, rules: dict):
-        res = None
-        for (source, operate) in rules.items():
-            if source == 'root':
-                res = self.data.json
-        return res
+    def run(self, rules: list):
+        """
+        执行爬虫方法
+        :param rules: 规则列表
+        """
+        try:
+            # 结果列表
+            res = []
+            # 遍历每一条规则
+            for rule in rules:
+                # 取出操作源和操作
+                source = rule['source']
+                operate = rule['operate']
+                # 进行操作并将结果记录
+                res.append(self.select(source, operate))
+            return res
+        except Exception as e:
+            raise e
+        
+def select(self, source: list | str, operate: list) -> list:
+    ...
+    
+
 
 
 class PageSpider():
@@ -53,37 +70,13 @@ class PageSpider():
         self.params = params
         self.headers = headers
 
-    def get(self) -> None: 
+    def run(self, rules: list):
         """
-        初始化浏览器并打开指定页面等待后续步骤
+        执行爬虫方法
+        :param rules: 规则列表
         """
-        self.driver.get(self.address, params=self.params, headers=self.headers)
+        print(rules)
+        return 0
 
-    def select(self, value: str):
-        """
-        根据规则选取页面中元素
-        :param value: 规则
-        """
-        ...
-
-    def action(self, value: str) -> None:
-        """
-        对选取的元素进行指定动作
-        :param value: 指定动作
-        """
-        ...
-    
-    def listen(self, value: str) -> None:
-        """
-        监听页面接口
-        :param value: 接口特征
-        """
-        ...
-
-    def close(self):
-        """
-        关闭浏览器释放资源
-        """
-        self.driver.quit()
 
     

@@ -69,7 +69,7 @@ const currentPage = ref(1); // 当前页码
 const totalPages = ref(currentAddress.value.length); // 总页数
 
 // 当前页面的内容
-let currentPageContent = currentAddress.value[0];
+let currentPageContent = ref(currentAddress.value[0]);
 
 // 处理页码变化
 const handlePageChange = async (newPage) => {
@@ -82,8 +82,13 @@ const handlePageChange = async (newPage) => {
 const getPreviewData = async () => {
   let { type, request, rules } = spiderInfo.value;
   let address = currentAddress.value[currentPage.value - 1];
-  const data = getPreviewDataService({type, address, request, rules});
-  console.log(data);
+  const data = await getPreviewDataService({type, address, request, rules});
+  if (data.data.code !== 200) {
+    ElMessage.error(data.data.message)
+  }
+  currentPageContent.value = data.data.data
+  isLoading.value = false
+  console.log(currentPageContent.value)
 }
 </script>
 

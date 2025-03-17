@@ -76,9 +76,10 @@ class scrapyService:
         :param spider: 爬虫信息
         """
         try:    
-            print(spider)
-            client = Client(address=spider.address, type=spider.type, request=spider.request)
-            return client.run()
+            request = spider.request.model_dump()
+            client = Client(address=spider.address, type=spider.type, request=request, rules=spider.rules)
+            res = client.run()
+            return res
         except Exception as e:    
             raise e
     

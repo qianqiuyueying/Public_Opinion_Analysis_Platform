@@ -1,5 +1,3 @@
-from DrissionPage import SessionPage
-
-session = SessionPage()
-data = session.get("https://www.baidu.com")
-print(data)
+a = []
+for i in a:
+    print("123")

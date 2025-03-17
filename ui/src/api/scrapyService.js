@@ -7,7 +7,6 @@ export const testSpiderService = async ({type, address, request, rules}) => {
 
 // 预览爬虫预览结果接口
 export const getPreviewDataService = async ({ type, address, request, rules }) => {
-    console.log(address)
     return request_.post("/scrapy/get-preview-data", {type, address, request, rules})
 }
 

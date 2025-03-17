@@ -63,7 +63,8 @@
               </el-icon>
               <span>爬虫管理</span>
             </template>
-            <el-menu-item index="/layout/scrapy/make-spider">制作爬虫</el-menu-item>
+            <el-menu-item index="/layout/scrapy/make-spider">个性爬虫</el-menu-item>
+            <el-menu-item index="/layout/scrapy/make-key-spider">关键词爬虫</el-menu-item>
             <el-menu-item index="/layout/scrapy/spider">爬虫管理</el-menu-item>
             <el-menu-item index="/layout/scrapy/task">任务管理</el-menu-item>
             <el-menu-item index="/layout/scrapy/data">数据管理</el-menu-item>

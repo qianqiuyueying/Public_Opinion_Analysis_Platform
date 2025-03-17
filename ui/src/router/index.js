@@ -1,7 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Login from "../pages/user/Login.vue";
 import Register from "../pages/user/Register.vue";
-
 import Home from "../pages/home/Home.vue";
 import ForgetPassword from "../pages/user/ForgetPassword.vue";
 import Layout from "@/components/Layout.vue";
@@ -17,9 +16,27 @@ import List from '@/pages/user/List.vue'
 import Board from "@/pages/board/Board.vue";
 import Message from '@/pages/message/Message.vue'
 import MakeSpider from "@/pages/scrapy/MakeSpider.vue";
+import Solutions from "@/pages/home/Solutions.vue";
+import Products from "@/pages/home/Products.vue";
+import Customers from "@/pages/home/Customers.vue";
+import About from "@/pages/home/About.vue";
+import HomeLayout from "@/pages/home/HomeLayout.vue";
+import MakeKeySpider from "@/pages/scrapy/MakeKeySpider.vue";
 
 const routes = [
-    {path: "/", component: Home},
+    {
+        path: "/",
+        redirect: "/home",
+        component: HomeLayout,
+        children: [
+            {path: "/home", component: Home},
+            {path: "/products", component: Products},
+            {path: "/solutions", component: Solutions},
+            {path: "/customers", component: Customers},
+            {path: "/about", component: About},
+        ]
+    },
+
     {path: "/login", component: Login},
     {path: "/register", component: Register},
     {path: '/forget-password', component: ForgetPassword},
@@ -32,6 +49,7 @@ const routes = [
                 path: "/layout/scrapy",
                 children: [
                     {path: "/layout/scrapy/make-spider", component: MakeSpider},
+                    {path: "/layout/scrapy/make-key-spider", component: MakeKeySpider},
                     {path: "/layout/scrapy/spider", component: Spider},
                     {path: '/layout/scrapy/task', component: Task},
                     {path: "/layout/scrapy/data", component: Data},

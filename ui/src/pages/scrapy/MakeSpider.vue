@@ -26,8 +26,6 @@
       </el-button-group>
     </el-footer>
   </el-container>
-
-
 </template>
 
 <script setup>

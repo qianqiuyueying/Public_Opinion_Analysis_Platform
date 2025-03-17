@@ -78,6 +78,9 @@
           <span class="show-text">源：</span>
           <el-select
               v-model="step.source"
+              multiple
+              :multiple-limit=1
+              collapse-tags
               style="margin-right: 15px">
             <el-option
                 v-for="(item, i) in selectorList"
@@ -86,8 +89,13 @@
                 :value="item.rules.length !== 0 ? item.rules : '未填写'"/>
           </el-select>
           <span class="show-text">操作：</span>
-          <el-select v-model="step.operate">
+          <el-select
+              v-model="step.operate"
+              multiple
+              collapse-tags
+              :multiple-limit=1>
             <el-option
+                v-if="spiderInfo.type === 'PageClass'"
                 v-for="(item, i) in partialOperationList"
                 :key="i"
                 :label="item.label"
