@@ -22,4 +22,15 @@ class SpiderDTO(BaseModel):
     type: str
     request: Request
     rules: list[dict]
+
+class KeySpiderDTO(BaseModel):
+    """
+    关键词爬虫数据传输对象
+    """
+    id: Optional[int] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    type: str = None
+    config: dict
+    limit: str | int
     

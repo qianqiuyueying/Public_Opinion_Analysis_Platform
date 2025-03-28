@@ -96,3 +96,13 @@ async def get_current_user(request: Request):
     if not user: 
         raise HTTPException(status_code=401, detail="未登录")
     return user
+
+
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+
+def get_time(timestamp):
+    timestamp /= 1000
+    dt_utc = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    dt = dt_utc.astimezone(ZoneInfo("Asia/Shanghai"))
+    return dt

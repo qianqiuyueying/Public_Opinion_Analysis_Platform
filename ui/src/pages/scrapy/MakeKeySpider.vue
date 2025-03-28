@@ -2,22 +2,16 @@
   <el-container style="padding:40px 0 0 0; height:100%; margin:auto;">
     <el-header style="height: auto">
       <el-steps :active="activeStep" align-center>
-        <el-step title='爬虫类型' description="选择合适的爬虫类型"/>
-        <el-step title="测试网址" description="设置用于测试爬虫的单条或多条网址"/>
-        <el-step title="请求配置" description="为爬虫配置合适的请求及参数"/>
-        <el-step title="定义规则" description="为爬虫自定义合适的数据筛选规则以及简单结果预览"/>
-        <el-step title="结果预览" description="预览全部网址的爬取结果"/>
-        <el-step title="生成爬虫" description="为该爬虫设置自定义信息并保存至数据库"/>
+        <el-step title='平台选择' description="选择搜索关键词的平台"/>
+        <el-step title="配置参数" description="依据平台搜索规则爬取合适的信息"/>
+        <el-step title="结果预览" description="预览信息获取结果"/>
+        <el-step title="生成爬虫" description="将该爬虫保存至数据库"/>
       </el-steps>
     </el-header>
     <el-main>
       <KeySpiderClass v-if="activeStep === 0" v-model:spiderInfo="spiderInfo"/>
-      <TestLink v-else-if="activeStep === 1" v-model:spiderInfo="spiderInfo"/>
-      <RequestConfig v-else-if="activeStep === 2" v-model:spiderInfo="spiderInfo"/>
-      <MakeRules v-else-if="activeStep === 3" v-model:spiderInfo="spiderInfo"/>
-      <ResultView v-else-if="activeStep === 4" v-model:spiderInfo="spiderInfo"/>
-      <ProductSpider v-else-if="activeStep === 5" v-model:active-step="activeStep" v-model:spiderInfo="spiderInfo"/>
-      <Celebration v-else-if="activeStep === 6"/>
+      <KeyConfig v-if="activeStep === 1" v-model:spiderInfo="spiderInfo"/>
+      <KeyResultView v-if="activeStep === 2" v-model:spiderInfo="spiderInfo"/>
     </el-main>
     <el-footer style="text-align:right">
       <el-button-group>
@@ -30,15 +24,10 @@
 
 <script setup>
 import {ref, reactive, onMounted} from 'vue';
-import TestLink from "@/pages/scrapy/components/TestLink.vue";
-import RequestConfig from "@/pages/scrapy/components/RequestConfig.vue";
-import MakeRules from "@/pages/scrapy/components/MakeRules.vue";
-import ResultView from "@/pages/scrapy/components/ResultView.vue";
-import ProductSpider from "@/pages/scrapy/components/ProductSpider.vue";
 import {ArrowLeft, ArrowRight} from "@element-plus/icons-vue";
-import Celebration from "@/pages/scrapy/components/Celebration.vue";
-import {createSpiderService} from '@/api/scrapyService.js'
 import KeySpiderClass from "@/pages/scrapy/keySpiderComponents/KeySpiderClass.vue";
+import KeyConfig from "@/pages/scrapy/keySpiderComponents/KeyConfig.vue";
+import KeyResultView from "@/pages/scrapy/keySpiderComponents/KeyResultView.vue";
 
 onMounted(async () => {
 
@@ -47,25 +36,12 @@ onMounted(async () => {
 
 const activeStep = ref(0); // 当前激活的步骤
 const spiderInfo = reactive({
-  name: "",  // 昵称
-  description: "",  // 描述
-  type: "APIClass",  // 爬虫类型
-  address: {
-    type: "direct",  // 默认直链类型
-    links: "",  // 直链们
-    rule: [
-      { type: "baseURL", value: "" },
-    ]
+  type: 'RedNote',
+  config: {
+    NoteType: 'all',
+    sortedBy: "general"
   },
-  request: {
-    method: "GET",
-    headers: [],
-    params: [],
-    body: [],
-  },
-  rules: [
-    {'source': "root", "operate": ""}
-  ],
+  limit: ""
 })
 
 
@@ -125,19 +101,8 @@ const handlePreviousStep = () => {
 }
 
 const handleNextStep = async () => {
-  if (activeStep.value < 5) {
+  if (activeStep.value < 6) {
     activeStep.value += 1;
-  } else if (activeStep.value === 5) {
-    // 校验
-    if (validateSpiderInfo()) {
-      let {name, description, type, address, request, rules} = spiderInfo;
-      const data = await createSpiderService({name, description, type, address, request, rules});
-      if (data.data.code === 200) {
-        activeStep.value += 1;
-      }
-    }
-  } else {
-    ElMessage.success('爬虫已经制作完成了哦~请前往任务管理开始采集任务吧！')
   }
 }
 </script>

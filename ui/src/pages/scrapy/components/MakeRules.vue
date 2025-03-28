@@ -17,30 +17,40 @@
                   v-model="item.type"
                   style="width: 125px"
                   disabled>
-                <el-option
-                    v-for="i in selectorType"
-                    :key="i.value"
-                    :label="i.label"
-                    :value="i.value"/>
               </el-select>
             </template>
           </el-input>
         </template>
         <template v-else-if="item.type === 'elementSelector' || item.type === 'jsonSelector'">
-          <el-input-tag
+          <el-input
               v-model="item.rules">
             <template #prefix>
               <el-select
                   v-model="item.type"
                   style="width: 125px">
                 <el-option
-                    v-for="i in selectorType"
-                    :key="i.value"
-                    :label="i.label"
-                    :value="i.value"/>
+                    v-if="spiderInfo.type === 'PageClass'"
+                    label="JSON选择器"
+                    value=jsonSelector
+                />
+                <el-option
+                    v-if="spiderInfo.type === 'PageClass'"
+                    label="元素选择器"
+                    value="elementSelector"
+                />
+                <el-option
+                    v-if="spiderInfo.type === 'PageClass'"
+                    label="监听API"
+                    value="APISelector"
+                />
+                <el-option
+                    v-if="spiderInfo.type === 'APIClass'"
+                    label="JSON选择器"
+                    value="jsonSelector"
+                />
               </el-select>
             </template>
-          </el-input-tag>
+          </el-input>
         </template>
         <template v-else-if="item.type === 'APISelector'">
           <el-input
@@ -50,10 +60,20 @@
                   v-model="item.type"
                   style="width: 125px">
                 <el-option
-                    v-for="i in selectorType"
-                    :key="i.value"
-                    :label="i.label"
-                    :value="i.value"/>
+                    v-if="spiderInfo.type === 'PageClass'"
+                    label="元素选择器"
+                    value="elementSelector"
+                />
+                <el-option
+                    v-if="spiderInfo.type === 'PageClass'"
+                    label="监听API"
+                    value="APISelector"
+                />
+                <el-option
+                    v-if="spiderInfo.type === 'APIClass'"
+                    label="JSON选择器"
+                    value="jsonSelector"
+                />
               </el-select>
             </template>
           </el-input>
@@ -62,7 +82,7 @@
 
       <!-- 添加/删除按钮 -->
       <div class="action-buttons">
-        <el-button type="primary" @click="handleAddSelector">添加规则</el-button>
+        <el-button type="primary" @click="handleAddSelector">添加选取规则</el-button>
         <el-button type="danger" @click="handleRemoveSelector">删除规则</el-button>
       </div>
     </el-card>
@@ -77,10 +97,8 @@
         <div v-for="(step, index) in spiderInfo.rules" :key="index" class="step-row">
           <span class="show-text">源：</span>
           <el-select
-              v-model="step.source"
               multiple
-              :multiple-limit=1
-              collapse-tags
+              v-model="step.source"
               style="margin-right: 15px">
             <el-option
                 v-for="(item, i) in selectorList"
@@ -91,9 +109,7 @@
           <span class="show-text">操作：</span>
           <el-select
               v-model="step.operate"
-              multiple
-              collapse-tags
-              :multiple-limit=1>
+              multiple>
             <el-option
                 v-if="spiderInfo.type === 'PageClass'"
                 v-for="(item, i) in partialOperationList"
@@ -122,12 +138,6 @@ import {ref} from 'vue'
 
 const spiderInfo = defineModel('spiderInfo')
 
-// 选择器类型
-const selectorType = ref([
-  {"value": "elementSelector", "label": "元素选择器"},
-  {"value": "jsonSelector", "label": "JSON选择器"},
-  {"value": "APISelector", "label": "监听API"}
-])
 // 已创建的选择器
 const selectorList = ref([
   {
@@ -154,10 +164,13 @@ const handleRemoveRules = () => {
 }
 
 
-
 // 添加选择器规则
 const handleAddSelector = () => {
-  selectorList.value.push({type: "elementSelector", rules: []})
+  if(spiderInfo.value.type === 'PageClass') {
+    selectorList.value.push({type: "elementSelector", rules: []})
+  } else if(spiderInfo.value.type === 'APIClass') {
+    selectorList.value.push({type: "jsonSelector", rules: []})
+  }
 }
 
 // 删除选择器规则
@@ -167,10 +180,26 @@ const handleRemoveSelector = () => {
   }
 }
 
+// source值变化
+const handleSourceChange = (index, newVal) => {
+  if (typeof newVal === 'object') {
+    spiderInfo.value.rules[index].source = newVal[0]
+  }
+  spiderInfo.value.rules[index].source = newVal
+}
+
+// operate值变化
+const handleOperateChange = (index, newVal) => {
+  if (typeof newVal === 'object') {
+    spiderInfo.value.rules[index].operate = 213113123131
+  }
+  spiderInfo.value.rules[index].operate = newVal
+}
+
 </script>
 
 <style scoped>
-:deep(.el-input-tag__prefix) {
+:deep(.el-input__wrapper) {
   padding: 0;
 }
 

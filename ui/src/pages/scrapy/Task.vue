@@ -39,7 +39,7 @@
       </div>
 
       <!-- 创建任务卡片 -->
-      <div class="task-card create-task-card" @click="createTask" v-if="filterStatus === '全部'">
+      <div class="task-card create-task-card" @click="createTask">
         <el-icon :size="40" class="add-icon">
           <Plus />
         </el-icon>

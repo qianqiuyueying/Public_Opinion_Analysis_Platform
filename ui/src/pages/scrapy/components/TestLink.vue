@@ -33,7 +33,7 @@
       <div v-if="spiderInfo.address.type === 'direct'" class="direct-mode">
         <el-input
             v-model="spiderInfo.address.links"
-            placeholder="请输入单条测试网址，或用英文分号 ';' 分隔的多条网址"
+            placeholder="请输入单条测试网址，或用英文分号加回车 ';' 分隔的多条网址"
             type="textarea"
             :rows="14"
             class="url-input"

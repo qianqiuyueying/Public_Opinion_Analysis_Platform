@@ -1,7 +1,6 @@
 <template>
   <div class="generate-spider-page">
     <el-card class="spider-info-card">
-      <h2 class="title">爬虫信息</h2>
 
       <!-- 爬虫信息展示 -->
       <div class="spider-info">
@@ -13,25 +12,11 @@
             <el-input v-model="spiderInfo.description"/>
           </el-descriptions-item>
         </el-descriptions>
+
         <!-- class 展示 -->
         <el-descriptions title="爬虫类型" :column="1" border>
           <el-descriptions-item label="类型" label-width="30%">
             {{ spiderInfo.type }}
-          </el-descriptions-item>
-        </el-descriptions>
-
-        <!-- address 展示 -->
-        <el-descriptions title="地址配置" :column="1" border>
-          <el-descriptions-item label="地址类型" label-width="30%">
-            {{ spiderInfo.address.type }}
-          </el-descriptions-item>
-          <el-descriptions-item v-if="spiderInfo.address.type === 'direct'" label="直链地址">
-            {{ spiderInfo.address.links }}
-          </el-descriptions-item>
-          <el-descriptions-item v-else-if="spiderInfo.address.type === 'segment'" label="片段组合规则">
-            <el-table :data="spiderInfo.address.rule" style="width: 100%">
-              <el-table-column prop="baseURL" label="基础URL" />
-            </el-table>
           </el-descriptions-item>
         </el-descriptions>
 
@@ -40,19 +25,19 @@
           <el-descriptions-item label="请求方法">
             {{ spiderInfo.request.method }}
           </el-descriptions-item>
-          <el-descriptions-item label="请求头">
+          <el-descriptions-item label="请求头" v-if="spiderInfo.request.method === 'GET'">
             <el-table :data="spiderInfo.request.headers" style="width: 100%">
               <el-table-column prop="key" label="键" />
               <el-table-column prop="value" label="值" />
             </el-table>
           </el-descriptions-item>
-          <el-descriptions-item label="请求参数">
+          <el-descriptions-item label="请求参数" v-if="spiderInfo.request.method === 'GET'">
             <el-table :data="spiderInfo.request.params" style="width: 100%">
               <el-table-column prop="key" label="键" />
               <el-table-column prop="value" label="值" />
             </el-table>
           </el-descriptions-item>
-          <el-descriptions-item label="请求体">
+          <el-descriptions-item label="请求体" v-if="spiderInfo.request.method === 'POST'">
             <el-table :data="spiderInfo.request.body" style="width: 100%">
               <el-table-column prop="key" label="键" />
               <el-table-column prop="value" label="值" />
@@ -64,8 +49,8 @@
         <el-descriptions title="规则配置" :column="1" border>
           <el-descriptions-item label="规则列表">
             <el-table :data="spiderInfo.rules" style="width: 100%">
-              <el-table-column prop="type" label="类型" />
-              <el-table-column prop="content" label="内容" />
+              <el-table-column prop="source" label="源" />
+              <el-table-column prop="operate" label="操作" />
             </el-table>
           </el-descriptions-item>
         </el-descriptions>
@@ -165,7 +150,6 @@ const generateSpider = async () => {
 .spider-info {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .generate-button {

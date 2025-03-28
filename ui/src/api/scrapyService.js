@@ -10,6 +10,11 @@ export const getPreviewDataService = async ({ type, address, request, rules }) =
     return request_.post("/scrapy/get-preview-data", {type, address, request, rules})
 }
 
+// 预览关键词爬虫结果接口
+export const getKeySpiderPreviewDataService = async ({type, config, limit}) => {
+    return request_.post('/scrapy/get-key-spider-preview-data', {type, config, limit})
+}
+
 // 获取爬虫信息接口
 export const getSpiderService = async () => {
 

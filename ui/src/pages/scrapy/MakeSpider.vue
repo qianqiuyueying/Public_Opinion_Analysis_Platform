@@ -63,9 +63,7 @@ const spiderInfo = reactive({
     params: [],
     body: [],
   },
-  rules: [
-    {'source': "root", "operate": ""}
-  ],
+  rules: [],
 })
 
 

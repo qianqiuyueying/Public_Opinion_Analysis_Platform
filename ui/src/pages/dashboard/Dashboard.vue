@@ -1,81 +1,86 @@
 <template>
-  <div class="home-container">
-    <!-- 数据概览 -->
-    <el-row :gutter="20" class="overview-row">
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">总舆情数</span>
-            <span class="card-value">12,345</span>
-            <el-icon :size="40" class="card-icon"><TrendCharts /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">正面舆情</span>
-            <span class="card-value">8,765</span>
-            <el-icon :size="40" class="card-icon"><SuccessFilled /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">负面舆情</span>
-            <span class="card-value">1,234</span>
-            <el-icon :size="40" class="card-icon"><WarningFilled /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="overview-card">
-          <div class="card-content">
-            <span class="card-label">今日新增</span>
-            <span class="card-value">567</span>
-            <el-icon :size="40" class="card-icon"><DataLine /></el-icon>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 舆情趋势图 -->
-    <el-card class="chart-card">
-      <template #header>
-        <span class="card-title">舆情趋势图</span>
-      </template>
-      <div ref="chartRef" class="chart-container"></div>
-    </el-card>
-
-    <!-- 热门话题和最新动态 -->
-    <el-row :gutter="20" class="bottom-row">
-      <el-col :span="12">
-        <el-card class="list-card">
+  <div class="dashboard-container">
+    <el-row :gutter="20">
+      <!-- 左侧爬虫信息列 -->
+      <el-col :xs="24" :sm="12" :lg="8">
+        <el-card class="info-card">
           <template #header>
-            <span class="card-title">热门话题</span>
+            <div class="card-header">
+              <span>爬虫管理</span>
+              <el-button type="primary" @click="toSpiderManage">前往</el-button>
+            </div>
           </template>
-          <el-table :data="hotTopics" style="width: 100%">
-            <el-table-column prop="rank" label="排名" width="80" />
-            <el-table-column prop="topic" label="话题" />
-            <el-table-column prop="count" label="讨论量" width="120" />
-          </el-table>
+          <div v-for="spider in spiders" :key="spider.id" class="item-card">
+            <el-card shadow="hover">
+              <div class="spider-info">
+                <div class="meta">
+                  <h4>{{ spider.name }}</h4>
+                  <el-button type="text">详情</el-button>
+                </div>
+                <el-text>{{ spider.description }}</el-text>
+              </div>
+            </el-card>
+          </div>
         </el-card>
       </el-col>
-      <el-col :span="12">
-        <el-card class="list-card">
+
+      <!-- 中间任务信息列 -->
+      <el-col :xs="24" :sm="12" :lg="8">
+        <el-card class="info-card">
           <template #header>
-            <span class="card-title">最新动态</span>
+            <div class="card-header">
+              <span>任务管理</span>
+              <el-button type="info" @click="toTaskManage">前往</el-button>
+            </div>
           </template>
-          <el-timeline>
-            <el-timeline-item
-                v-for="(event, index) in latestEvents"
-                :key="index"
-                :timestamp="event.time"
-            >
-              {{ event.content }}
-            </el-timeline-item>
-          </el-timeline>
+          <div v-for="task in tasks" :key="task.id" class="item-card">
+            <el-card shadow="hover">
+              <div class="task-info">
+                <div class="meta">
+                  <h4>{{ task.name }}</h4>
+                  <el-tag :type="getStatusColor(task.status)" size="small">
+                    {{ task.status }}
+                  </el-tag>
+                </div>
+                <el-progress
+                    :percentage="task.progress"
+                    :status="getProgressStatus(task.status)"
+                    :stroke-width="16"
+                />
+                <div class="stats">
+                  <span>启动时间：{{ task.startTime }}</span>
+                  <span>持续时间：{{ task.duration }}</span>
+                </div>
+              </div>
+            </el-card>
+          </div>
+        </el-card>
+      </el-col>
+
+      <!-- 右侧数据集分析列 -->
+      <el-col :xs="24" :sm="24" :lg="8">
+        <el-card class="info-card">
+          <template #header>
+            <div class="card-header">
+              <span>情感分析</span>
+              <el-button type="success" @click="toAnalytics">前往</el-button>
+            </div>
+          </template>
+          <div v-for="dataset in datasets" :key="dataset.id" class="item-card">
+            <el-card shadow="hover">
+              <div class="dataset-info">
+                <h4>{{ dataset.taskName }}</h4>
+                <div class="chart-container">
+                  <div :id="'chart-'+dataset.id" class="sentiment-chart"></div>
+                </div>
+                <div class="legend">
+                  <span class="positive"><i class="dot" /> 正向 {{ dataset.sentiment.positive }}%</span>
+                  <span class="neutral"><i class="dot" /> 中立 {{ dataset.sentiment.neutral }}%</span>
+                  <span class="negative"><i class="dot" /> 负向 {{ dataset.sentiment.negative }}%</span>
+                </div>
+              </div>
+            </el-card>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -83,126 +88,227 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
-import {
-  TrendCharts,
-  SuccessFilled,
-  WarningFilled,
-  DataLine,
-} from '@element-plus/icons-vue'
+import router from '@/router/index.js'
 
-
-// 舆情趋势图
-const chartRef = ref(null)
-let chartInstance = null
-
-// 初始化图表
-const initChart = () => {
-  chartInstance = echarts.init(chartRef.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-    },
-    xAxis: {
-      type: 'category',
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        name: '舆情数量',
-        type: 'line',
-        data: [120, 200, 150, 80, 70, 110, 130],
-        smooth: true,
-      },
-    ],
-  }
-  chartInstance.setOption(option)
+// 前往爬虫管理页面
+const toSpiderManage = () => {
+  router.push('/layout/scrapy/spider')
 }
 
-// 热门话题数据
-const hotTopics = ref([
-  { rank: 1, topic: '某品牌新品发布', count: 1234 },
-  { rank: 2, topic: '某事件引发热议', count: 987 },
-  { rank: 3, topic: '某明星动态', count: 765 },
-  { rank: 4, topic: '某政策解读', count: 543 },
-  { rank: 5, topic: '某行业趋势', count: 321 },
+// 前往任务管理页面
+const toTaskManage = () => {
+  router.push('/layout/scrapy/task')
+}
+
+// 前往情感分析页面
+const toAnalytics = () => {
+  router.push('/layout/analytics/details')
+}
+
+// 状态颜色映射
+const statusColorMap = {
+  '运行中': 'success',
+  '已停止': 'info',
+  '异常': 'danger',
+  '已完成': 'primary',
+  '排队中': 'warning'
+}
+
+// 响应式数据
+const spiders = ref([
+  {
+    id: 1,
+    name: '微博舆情爬虫',
+    description: '实时采集微博热点话题',
+  },
+  {
+    id: 2,
+    name: '微博舆情爬虫',
+    description: '实时采集微博热点话题',
+
+  },
+  {
+    id: 3,
+    name: '微博舆情爬虫',
+    description: '实时采集微博热点话题',
+  },
+  {
+    id: 3,
+    name: '微博舆情爬虫',
+    description: '实时采集微博热点话题',
+  }
 ])
 
-// 最新动态数据
-const latestEvents = ref([
-  { time: '2023-10-01 12:00', content: '新增舆情 123 条' },
-  { time: '2023-10-01 10:00', content: '用户 A 发布了新话题' },
-  { time: '2023-10-01 09:30', content: '系统完成数据更新' },
-  { time: '2023-10-01 08:00', content: '新增负面舆情 10 条' },
+const tasks = ref([
+  {
+    id: 1,
+    name: '七月舆情周报',
+    status: '进行中',
+    progress: 65,
+    startTime: '2023-07-20 09:00',
+    duration: '3小时15分'
+  },
+  {
+    id: 2,
+    name: '七月舆情周报',
+    status: '进行中',
+    progress: 65,
+    startTime: '2023-07-20 09:00',
+    duration: '3小时15分'
+  },
+  {
+    id: 3,
+    name: '七月舆情周报',
+    status: '进行中',
+    progress: 65,
+    startTime: '2023-07-20 09:00',
+    duration: '3小时15分'
+  },
 ])
 
-// 组件挂载后初始化图表
+const datasets = ref([
+  {
+    id: 1,
+    taskName: '七月第三周数据集',
+    sentiment: { positive: 62, neutral: 28, negative: 10 }
+  },
+  {
+    id: 2,
+    taskName: '七月第三周数据集',
+    sentiment: { positive: 62, neutral: 28, negative: 10 }
+  },
+])
+
+// 图表实例存储
+const charts = ref([])
+
+// 生命周期钩子
 onMounted(() => {
-  initChart()
+  initCharts()
+  window.addEventListener('resize', handleResize)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+  charts.value.forEach(chart => chart.dispose())
+})
+
+// 方法
+const getStatusColor = (status) => statusColorMap[status] || 'info'
+
+const getProgressStatus = (status) => status === '异常' ? 'exception' : null
+
+const initCharts = () => {
+  datasets.value.forEach(dataset => {
+    const chartDom = document.getElementById(`chart-${dataset.id}`)
+    if (!chartDom) return
+
+    const chart = echarts.init(chartDom)
+    chart.setOption({
+      color: ['#67C23A', '#909399', '#F56C6C'],
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c}%'
+      },
+      series: [{
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 5,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '14',
+            fontWeight: 'bold'
+          }
+        },
+        data: [
+          { value: dataset.sentiment.positive, name: '正向' },
+          { value: dataset.sentiment.neutral, name: '中立' },
+          { value: dataset.sentiment.negative, name: '负向' }
+        ]
+      }]
+    })
+    charts.value.push(chart)
+  })
+}
+
+const handleResize = () => {
+  charts.value.forEach(chart => chart.resize())
+}
 </script>
 
 <style scoped>
-.home-container {
-  padding: 20px;
+/* 保持原有样式不变 */
+.dashboard-container {
+  padding: 10px;
 }
 
-.overview-row {
-  margin-bottom: 20px;
-}
-
-.overview-card {
-  height: 120px;
-}
-
-.card-content {
+.card-header {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: relative;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.card-label {
-  font-size: 14px;
+.item-card {
+  margin-bottom: 15px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
   color: #666;
-}
-
-.card-value {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 10px 0;
-}
-
-.card-icon {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--el-color-primary);
-}
-
-.chart-card {
-  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 .chart-container {
-  height: 300px;
+  height: 180px;
+  margin: 15px 0;
 }
 
-.bottom-row {
-  margin-top: 20px;
+.legend {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.9em;
 }
 
-.list-card {
-  height: 400px;
+.legend span {
+  display: flex;
+  align-items: center;
 }
 
-.card-title {
-  font-size: 18px;
-  font-weight: bold;
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.positive .dot { background: #67C23A; }
+.neutral .dot { background: #909399; }
+.negative .dot { background: #F56C6C; }
+
+.sentiment-chart {
+  width: 100%;
+  height: 100%;
 }
 </style>
